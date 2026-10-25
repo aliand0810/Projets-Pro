@@ -126,6 +126,29 @@ main{margin:0 auto;padding:16px clamp(12px,2vw,28px) calc(90px + var(--safe-b));
 .seg2 button{border:none;background:transparent;color:var(--ink2);border-radius:9px;padding:7px 12px;font-weight:900;font-size:.8rem;cursor:pointer;}
 .seg2 button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow);}
 .qchips{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;}
+/* Capital des projets (cagnotte commune) */
+.capb{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;margin-bottom:12px;border-radius:16px;background:linear-gradient(135deg,color-mix(in srgb,var(--good) 14%,var(--surface)),var(--surface) 70%);border:1px solid color-mix(in srgb,var(--good) 35%,var(--line));box-shadow:var(--shadow);cursor:pointer;}
+.capb .ci{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:1.5rem;background:color-mix(in srgb,var(--good) 18%,transparent);}
+.capb span{display:block;font-size:.66rem;font-weight:900;text-transform:uppercase;letter-spacing:.4px;color:var(--mute);}
+.capb b{display:block;font-size:1.45rem;font-weight:900;color:var(--good);line-height:1.15;}
+.capb b.neg{color:var(--crit);}
+.capb small{display:block;font-size:.74rem;color:var(--ink2);font-weight:700;}
+.capb .ca{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;}
+.capb .ca .btn{padding:9px 12px;font-size:.82rem;}
+@media (max-width:640px){.capb{grid-template-columns:auto minmax(0,1fr);}.capb .ca{grid-column:1/-1;justify-content:stretch;}.capb .ca .btn{flex:1;}}
+.capsum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
+.capsum div{padding:10px;border-radius:12px;background:var(--soft);}
+.capsum span{display:block;font-size:.62rem;font-weight:900;text-transform:uppercase;letter-spacing:.4px;color:var(--mute);}
+.capsum b{display:block;font-size:1.05rem;font-weight:900;margin-top:2px;}
+@media (max-width:480px){.capsum{grid-template-columns:1fr 1fr;}.capsum div:first-child{grid-column:1/-1;}}
+.caph{margin-top:16px;}
+.caph h4{margin:0 0 6px;font-size:.8rem;font-weight:900;}
+.caph .tbl td{vertical-align:top;}
+.capck{display:flex;align-items:center;gap:8px;margin-top:12px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--good) 10%,transparent);border:1px solid color-mix(in srgb,var(--good) 30%,var(--line));font-size:.84rem;font-weight:800;cursor:pointer;}
+.capck input{width:18px;height:18px;accent-color:var(--good);}
+.capck.dis{opacity:.55;cursor:not-allowed;}
+.captag{display:inline-block;margin-left:4px;padding:1px 6px;border-radius:999px;background:color-mix(in srgb,var(--good) 15%,transparent);color:var(--good);font-size:.66rem;font-weight:900;}
+#mcap select{width:100%;}
 .qchips button{border:1.5px solid var(--line);background:var(--surface);color:var(--ink2);border-radius:999px;padding:7px 12px;font-weight:900;font-size:.8rem;cursor:pointer;}
 .qchips button:hover{border-color:var(--good);color:var(--good);}
 .ist{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);font-size:.88rem;font-weight:600;}
@@ -454,11 +477,29 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
       <div class="f"><label>Origine</label><input id="q-lib" maxlength="120" list="dl-orig" placeholder="ex : épargne"></div>
       <div class="f"><label>Date</label><input id="q-date" type="date"></div>
     </div>
+    <label class="capck" id="q-capw"><input type="checkbox" id="q-cap"> <span id="q-capt"></span></label>
     <div class="qchips" id="q-ch"><button data-q="50">+50 €</button><button data-q="100">+100 €</button><button data-q="200">+200 €</button><button data-q="500">+500 €</button><button data-q="1000">+1 000 €</button></div>
   </div>
   <div class="mf"><button class="btn sec" data-qclose="1">Annuler</button><button class="btn ok" id="q-ok">💵 Ajouter le montant</button></div>
 </div></div>
 <datalist id="dl-orig"><option value="Épargne"><option value="Apport personnel"><option value="Apport associé"><option value="Recette du magasin"><option value="Subvention"><option value="Prêt"></datalist>
+
+<div class="modal" id="mcap"><div class="bx">
+  <div class="mh"><h3>💰 Capital des projets</h3><button class="x2" data-cclose="1">✕</button></div>
+  <div class="mb">
+    <div class="capsum" id="c-sum"></div>
+    <div class="seg2" id="c-sg"><button class="on" data-cs="add">➕ Ajouter</button><button data-cs="out">➖ Retirer</button><button data-cs="aff">➡️ Affecter à un projet</button></div>
+    <div class="fg" style="margin-top:12px">
+      <div class="f full" id="c-pjw" style="display:none"><label>Projet</label><select id="c-pj"></select><small id="c-pjh"></small></div>
+      <div class="f full"><label>Montant (€)</label><input id="c-mt" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00" style="font-size:1.4rem;font-weight:900"></div>
+      <div class="f"><label id="c-libl">Origine</label><input id="c-lib" maxlength="120" list="dl-orig" placeholder="ex : épargne"></div>
+      <div class="f"><label>Date</label><input id="c-date" type="date"></div>
+    </div>
+    <div class="qchips" id="c-ch"><button data-cq="100">+100 €</button><button data-cq="500">+500 €</button><button data-cq="1000">+1 000 €</button><button data-cq="5000">+5 000 €</button><button data-cq="rest" id="c-rest" style="display:none">🎯 Reste à financer</button><button data-cq="all" id="c-all" style="display:none">Tout le capital</button></div>
+    <div class="caph" id="c-hist"></div>
+  </div>
+  <div class="mf"><button class="btn sec" data-cclose="1">Fermer</button><button class="btn ok" id="c-ok">➕ Ajouter au capital</button></div>
+</div></div>
 
 <div class="modal" id="mset"><div class="bx">
   <div class="mh"><h3>⚙️ Réglages</h3><button class="x2" data-sclose="1">✕</button></div>
@@ -526,6 +567,25 @@ var KEY = 'covo_projets';
 var DOC = lsJson(KEY, null);
 if (!DOC || !Array.isArray(DOC.projets)) DOC = { v: 1, projets: [], deleted: {}, updatedAt: 0, orderAt: 0 };
 if (!DOC.deleted) DOC.deleted = {};
+/* ───────────── Capital des projets (cagnotte commune) ─────────────
+   DOC.capital.mv : mouvements { id, t, date, mt (+ ajout / − retrait ou affectation), lib, by, pj?, pjNom?, ap? }
+   Une affectation sort du capital (mt négatif) et crée un apport « Capital » dans le projet (lié par ap / cap). */
+var CAPK = 'covo_projets_capital';             // copie de secours (au cas où une autre appli réécrit covo_projets sans le capital)
+function capFix() {
+    if (!DOC.capital || !Array.isArray(DOC.capital.mv)) DOC.capital = { mv: [] };
+    var m = lsJson(CAPK, null);
+    if (m && m.capital && Array.isArray(m.capital.mv)) { Object.keys(m.deleted || {}).forEach(function (k) { if (/^C-/.test(k) && !DOC.deleted[k]) DOC.deleted[k] = m.deleted[k]; }); DOC.capital = mergeCap(DOC, m, DOC.deleted); }
+}
+function mergeCap(a, b, del) {
+    var map = {}; [(a.capital && a.capital.mv) || [], (b.capital && b.capital.mv) || []].forEach(function (L) { L.forEach(function (m) { if (m && m.id && !map[m.id]) map[m.id] = m; }); });
+    return { mv: Object.keys(map).map(function (k) { return map[k]; }).filter(function (m) { return !(del || {})[m.id]; }).sort(function (x, y) { return (x.t || 0) - (y.t || 0); }) };
+}
+function capMv() { return (DOC.capital && DOC.capital.mv) || []; }
+function capital() { return Math.round(capMv().reduce(function (a, m) { return a + (+m.mt || 0); }, 0) * 100) / 100; }
+function capIn() { return capMv().filter(function (m) { return !m.pj; }).reduce(function (a, m) { return a + (+m.mt || 0); }, 0); }
+function capAff() { return -capMv().filter(function (m) { return m.pj; }).reduce(function (a, m) { return a + (+m.mt || 0); }, 0); }
+function docSig(d) { return JSON.stringify([d.projets || [], ((d.capital && d.capital.mv) || []).map(function (m) { return m.id; }).sort()]); }
+capFix();
 var ST = {
     idee: ['💡', 'Idée'], vote: ['🗳️', 'En vote'], valide: ['✅', 'Validé'], encours: ['🚧', 'En cours'],
     pause: ['⏸️', 'En pause'], termine: ['🏁', 'Terminé'], refuse: ['❌', 'Refusé']
@@ -558,12 +618,14 @@ function touch(p) { p.updatedAt = Date.now(); }
 function save(orderChanged) {
     DOC.updatedAt = Date.now(); if (orderChanged) DOC.orderAt = DOC.updatedAt;
     try { localStorage.setItem(KEY, JSON.stringify(DOC)); } catch (e) { toast('⚠️ Stockage plein : exportez vos projets'); }
+    capMirror();
     GD.dirty = true; try { localStorage.setItem('covo_projets_pending', '1'); } catch (e) {}
     // COVO Pro : la modification est signalée à COVO Sync → COVO Pro (ou une autre app connectée) l'enregistre sur Drive
     try { var iso = new Date().toISOString(); localStorage.setItem('covo_drive_pending', iso); localStorage.setItem('covo_last_local_change', iso); } catch (e) {}
     driveSchedule(); ghSchedule(); render();
 }
-window.addEventListener('storage', function (e) { if (e.key === KEY) { var d = lsJson(KEY, null); if (d && Array.isArray(d.projets)) { DOC = d; if (!DOC.deleted) DOC.deleted = {}; render(); if (CUR) sheetRender(); } } });
+function capMirror() { try { var dl = {}; Object.keys(DOC.deleted || {}).forEach(function (k) { if (/^C-/.test(k)) dl[k] = DOC.deleted[k]; }); localStorage.setItem(CAPK, JSON.stringify({ capital: DOC.capital, deleted: dl })); } catch (e) {} }
+window.addEventListener('storage', function (e) { if (e.key === KEY) { var d = lsJson(KEY, null); if (d && Array.isArray(d.projets)) { DOC = d; if (!DOC.deleted) DOC.deleted = {}; capFix(); render(); if (CUR) sheetRender(); if ($('mcap').classList.contains('on')) capRender(); } } });
 
 /* priorité : place le projet actif au rang n (1 = prioritaire), les autres se décalent */
 function setRank(p, n) {
@@ -616,10 +678,13 @@ function render() {
     var CH = [['all', '⭐ Actifs'], ['vote', '🗳️ En vote'], ['valide', '✅ Validés'], ['encours', '🚧 En cours'], ['idee', '💡 Idées'], ['pause', '⏸️ En pause'], ['arch', '🏁 Terminés / refusés']];
     var list = (F.f === 'all' ? A : F.f === 'arch' ? arch : all.filter(function (p) { return p.statut === F.f; })).filter(function (p) { return !q || [p.nom, p.cat, p.desc, p.resp].join(' ').toLowerCase().indexOf(q) >= 0; });
     var canDrag = F.f === 'all' && !q;
-    var h = '<div class="kpis">'
+    var cap = capital(), nAff = capMv().filter(function (m) { return m.pj; }).length;
+    var h = '<div class="capb" data-cap="hist" title="Capital des projets : ajouter, retirer, affecter"><div class="ci">💰</div><div class="ct"><span>Capital des projets · à affecter</span><b class="num' + (cap < 0 ? ' neg' : '') + '">' + eur(cap) + '</b><small>' + (capMv().length ? 'apporté ' + eur0(capIn()) + ' · affecté aux projets ' + eur0(capAff()) + (nAff ? ' (' + nAff + ' affectation' + (nAff > 1 ? 's' : '') + ')' : '') : 'Ajoutez votre capital, puis affectez-le aux projets par priorité') + '</small></div>'
+        + '<div class="ca"><button class="btn ok" data-cap="add">＋ Ajouter</button>' + (A.length ? '<button class="btn sec" data-cap="aff">➡️ Affecter</button>' : '') + '</div></div>';
+    h += '<div class="kpis">'
         + '<div class="kpi" style="--c:var(--acc)"><span>Projets actifs</span><b class="num">' + A.length + '</b><small>' + nVal + ' validé' + (nVal > 1 ? 's' : '') + ' / en cours · ' + nVote + ' en vote</small></div>'
         + '<div class="kpi" style="--c:#6250d6"><span>Prix des projets</span><b class="num">' + eur0(bud) + '</b><small>dépensé ' + eur0(sp) + (over ? ' · ⚠️ ' + over + ' hors budget' : '') + '</small></div>'
-        + '<div class="kpi" style="--c:' + (di < 0 ? 'var(--crit)' : 'var(--good)') + '"><span>Montant disponible</span><b class="num"' + (di < 0 ? ' style="color:var(--crit)"' : ' style="color:var(--good)"') + '>' + eur0(di) + '</b><small>financé ' + eur0(fu) + ' − dépensé ' + eur0(sp) + '</small></div>'
+        + '<div class="kpi" style="--c:' + (di < 0 ? 'var(--crit)' : 'var(--good)') + '"><span>Montant disponible</span><b class="num"' + (di < 0 ? ' style="color:var(--crit)"' : ' style="color:var(--good)"') + '>' + eur0(di) + '</b><small>financé ' + eur0(fu) + ' − dépensé ' + eur0(sp) + (cap ? ' · + capital ' + eur0(cap) : '') + '</small></div>'
         + '<div class="kpi" style="--c:var(--warn)"><span>Reste à financer</span><b class="num">' + eur0(af) + '</b><small>' + (bud ? Math.min(100, Math.round(fu / bud * 100)) + ' % financé' : '—') + '</small></div></div>';
     h += '<div class="lay"><div class="colL">';
     h += '<div class="bar"><input class="q" id="q" type="search" placeholder="🔎 Rechercher un projet…" value="' + esc(F.q) + '"><div class="chips">' + CH.map(function (c) { return '<button class="chip' + (F.f === c[0] ? ' on' : '') + '" data-f="' + c[0] + '">' + c[1] + '<em>' + cnt(c[0]) + '</em></button>'; }).join('') + '</div></div>';
@@ -740,8 +805,9 @@ function sheetRender() {
             + '<div class="f" style="margin-top:10px"><label>Prix du projet (€)</label><div style="display:flex;gap:8px"><input id="b-bud" type="number" min="0" step="0.01" inputmode="decimal" value="' + (b || '') + '"><button class="btn sec" id="b-bok">OK</button></div></div></div>';
         var AP = (p.apports || []).slice().sort(function (x, y) { return String(y.date).localeCompare(String(x.date)) || (y.t || 0) - (x.t || 0); });
         h += '<div class="card" style="margin-bottom:12px"><h4>💵 Montants disponibles</h4><div class="sub">Ajoutez à la main l’argent réuni pour ce projet (épargne, apport, subvention…) ; un retrait le diminue.</div>'
-            + (AP.length ? '<table class="tbl"><thead><tr><th>Date</th><th>Origine</th><th class="r">Montant</th><th></th></tr></thead><tbody>' + AP.map(function (d) { return '<tr><td>' + fmtD(d.date) + '</td><td>' + esc(d.lib || (d.mt < 0 ? 'Retrait' : 'Apport')) + (d.by ? '<br><small style="color:var(--mute);font-weight:700">' + esc(d.by) + '</small>' : '') + '</td><td class="r num"><b style="color:' + (d.mt < 0 ? 'var(--crit)' : 'var(--good)') + '">' + (d.mt < 0 ? '−' : '+') + eur(Math.abs(d.mt)) + '</b></td><td class="r"><button class="x" data-ad="' + esc(d.id) + '" title="Supprimer">✕</button></td></tr>'; }).join('') + '</tbody></table>' : '<div class="hint">Aucun montant ajouté pour l’instant.</div>')
+            + (AP.length ? '<table class="tbl"><thead><tr><th>Date</th><th>Origine</th><th class="r">Montant</th><th></th></tr></thead><tbody>' + AP.map(function (d) { return '<tr><td>' + fmtD(d.date) + '</td><td>' + esc(d.lib || (d.mt < 0 ? 'Retrait' : 'Apport')) + (d.cap ? '<span class="captag">💰 capital</span>' : '') + (d.by ? '<br><small style="color:var(--mute);font-weight:700">' + esc(d.by) + '</small>' : '') + '</td><td class="r num"><b style="color:' + (d.mt < 0 ? 'var(--crit)' : 'var(--good)') + '">' + (d.mt < 0 ? '−' : '+') + eur(Math.abs(d.mt)) + '</b></td><td class="r"><button class="x" data-ad="' + esc(d.id) + '" title="Supprimer">✕</button></td></tr>'; }).join('') + '</tbody></table>' : '<div class="hint">Aucun montant ajouté pour l’instant.</div>')
             + '<div class="seg2" id="a-sg"><button class="on" data-sg="1">➕ Ajouter</button><button data-sg="-1">➖ Retirer</button></div>'
+            + '<label class="capck" id="a-capw"><input type="checkbox" id="a-cap"> <span id="a-capt">💰 Prendre dans le capital des projets (disponible ' + eur(capital()) + ')</span></label>'
             + '<div class="add"><input id="a-date" type="date" value="' + ymd() + '"><input id="a-lib" maxlength="120" placeholder="Origine (ex : épargne, apport associé…)"><input id="a-mt" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Montant €"><button class="btn ok" id="a-add">💵 Valider</button></div></div>';
         var D = (p.depenses || []).slice().sort(function (x, y) { return String(y.date).localeCompare(String(x.date)); });
         var cats = {}; D.forEach(function (d) { var k = d.cat || 'Divers'; cats[k] = (cats[k] || 0) + (+d.mt || 0); });
@@ -816,8 +882,15 @@ function bind() {
         var zm = t.closest('[data-zoom]'); if (zm) { e.stopPropagation(); return zoom(zm.getAttribute('data-zoom')); }
         if (t.closest('#zoom')) { $('zoom').classList.remove('on'); return; }
         var am = t.closest('[data-addm]'); if (am) { openAmount(am.closest('.pj').getAttribute('data-id')); return; }
-        if (t.id === 'q-ok') { var qp = byId(QA), qs = document.querySelector('#q-sg .on') && document.querySelector('#q-sg .on').getAttribute('data-sg') === '-1' ? -1 : 1; if (qp && addAmount(qp, qs * (+String($('q-mt').value).replace(',', '.') || 0), $('q-lib').value.trim(), $('q-date').value, true)) $('mamt').classList.remove('on'); return; }
-        var qsg = t.closest('#q-sg [data-sg]'); if (qsg) { document.querySelectorAll('#q-sg button').forEach(function (x) { x.classList.toggle('on', x === qsg); }); $('q-ok').textContent = qsg.getAttribute('data-sg') === '-1' ? '➖ Retirer le montant' : '💵 Ajouter le montant'; $('q-ok').className = 'btn ' + (qsg.getAttribute('data-sg') === '-1' ? 'dan' : 'ok'); return; }
+        if (t.id === 'q-ok') { var qp = byId(QA), qs = document.querySelector('#q-sg .on') && document.querySelector('#q-sg .on').getAttribute('data-sg') === '-1' ? -1 : 1, qm = qs * (+String($('q-mt').value).replace(',', '.') || 0); if (qp && ($('q-cap').checked ? capTransfer(qp, qm, $('q-lib').value.trim(), $('q-date').value, true) : addAmount(qp, qm, $('q-lib').value.trim(), $('q-date').value, true))) $('mamt').classList.remove('on'); return; }
+        if (t.id === 'q-cap') { qCapTxt(); return; }
+        var cq = t.closest('[data-cap]'); if (cq) { e.stopPropagation(); return openCapital(cq.getAttribute('data-cap')); }
+        var cs = t.closest('#c-sg [data-cs]'); if (cs) { CAPM = cs.getAttribute('data-cs'); return capRender(true); }
+        var cc = t.closest('#c-ch [data-cq]'); if (cc) { var cv = cc.getAttribute('data-cq'), ci = $('c-mt'), cpj = byId($('c-pj').value); if (cv === 'all') ci.value = Math.max(0, capital()); else if (cv === 'rest') ci.value = cpj ? Math.max(0, Math.min(capital(), aFinancer(cpj))) : ''; else ci.value = Math.round(((+String(ci.value).replace(',', '.') || 0) + (+cv)) * 100) / 100; ci.focus(); return; }
+        if (t.id === 'c-ok') return capOk();
+        var cx = t.closest('[data-cdel]'); if (cx) return capDel(cx.getAttribute('data-cdel'));
+        if (t.closest('[data-cclose]') || t.id === 'mcap') { $('mcap').classList.remove('on'); return; }
+        var qsg = t.closest('#q-sg [data-sg]'); if (qsg) { document.querySelectorAll('#q-sg button').forEach(function (x) { x.classList.toggle('on', x === qsg); }); $('q-ok').textContent = qsg.getAttribute('data-sg') === '-1' ? '➖ Retirer le montant' : '💵 Ajouter le montant'; $('q-ok').className = 'btn ' + (qsg.getAttribute('data-sg') === '-1' ? 'dan' : 'ok'); qCapTxt(); return; }
         if (t.closest('[data-sclose]') || t.id === 'mset') { $('mset').classList.remove('on'); return; }
         var qt = t.closest('[data-qt]'); if (qt) { QRT = qt.getAttribute('data-qt'); return openSettings(); }
         var qa = t.closest('[data-qa]'); if (qa) return setAct(qa.getAttribute('data-qa'));
@@ -837,10 +910,10 @@ function bind() {
         if (t.id === 'i-add') { var iu = imgUrl($('i-url').value); if (!iu) { $('i-url').focus(); return toast('Collez un lien web d’image valide (https://…)'); } if (imgs(p2).indexOf(iu) >= 0) return toast('Cette image est déjà jointe'); (p2.images = imgs(p2)).push(iu); hist(p2, '🖼️ Image jointe'); touch(p2); save(); toast('🖼️ Image jointe au projet'); return sheetRender(); }
         var ic = t.closest('[data-icov]'); if (ic) { var L = imgs(p2), k = +ic.getAttribute('data-icov'), u0 = L.splice(k, 1)[0]; L.unshift(u0); p2.images = L; hist(p2, '⭐ Image principale changée'); touch(p2); save(); return sheetRender(); }
         var idl = t.closest('[data-idel]'); if (idl) { if (!confirm('Retirer cette image du projet ?')) return; var L2 = imgs(p2); L2.splice(+idl.getAttribute('data-idel'), 1); p2.images = L2; hist(p2, '🖼️ Image retirée'); touch(p2); save(); return sheetRender(); }
-        if (t.id === 's-del') { if (confirm('Supprimer définitivement le projet « ' + p2.nom + ' » ?')) { DOC.deleted[p2.id] = Date.now(); DOC.projets = DOC.projets.filter(function (x) { return x !== p2; }); closeSheet(); save(true); toast('🗑️ Projet supprimé'); } return; }
-        var sg = t.closest('[data-sg]'); if (sg) { document.querySelectorAll('#a-sg button').forEach(function (x) { x.classList.toggle('on', x === sg); }); $('a-add').textContent = sg.getAttribute('data-sg') === '-1' ? '➖ Retirer' : '💵 Valider'; $('a-add').className = 'btn ' + (sg.getAttribute('data-sg') === '-1' ? 'dan' : 'ok'); return; }
-        if (t.id === 'a-add') { var sgn = document.querySelector('#a-sg .on') && document.querySelector('#a-sg .on').getAttribute('data-sg') === '-1' ? -1 : 1; addAmount(p2, sgn * (+String($('a-mt').value).replace(',', '.') || 0), $('a-lib').value.trim(), $('a-date').value); return; }
-        var ad = t.closest('[data-ad]'); if (ad) { var ax = (p2.apports || []).filter(function (y) { return y.id === ad.getAttribute('data-ad'); })[0]; if (ax && confirm('Supprimer ce montant (' + eur(ax.mt) + ') ?')) { p2.apports = p2.apports.filter(function (y) { return y !== ax; }); hist(p2, 'Montant supprimé : ' + eur(ax.mt)); touch(p2); save(); sheetRender(); } return; }
+        if (t.id === 's-del') { var pc = (p2.apports || []).filter(function (y) { return y.cap; }), pcm = pc.reduce(function (a, y) { return a + (+y.mt || 0); }, 0); if (confirm('Supprimer définitivement le projet « ' + p2.nom + ' » ?' + (pc.length ? '\n\n💰 ' + eur(pcm) + ' affecté(s) depuis le capital y retourne(nt).' : ''))) { pc.forEach(function (y) { capDrop(y.cap); }); DOC.deleted[p2.id] = Date.now(); DOC.projets = DOC.projets.filter(function (x) { return x !== p2; }); closeSheet(); save(true); toast('🗑️ Projet supprimé'); } return; }
+        var sg = t.closest('[data-sg]'); if (sg) { document.querySelectorAll('#a-sg button').forEach(function (x) { x.classList.toggle('on', x === sg); }); $('a-add').textContent = sg.getAttribute('data-sg') === '-1' ? '➖ Retirer' : '💵 Valider'; $('a-add').className = 'btn ' + (sg.getAttribute('data-sg') === '-1' ? 'dan' : 'ok'); $('a-capt').textContent = sg.getAttribute('data-sg') === '-1' ? '💰 Remettre ce montant dans le capital des projets' : '💰 Prendre dans le capital des projets (disponible ' + eur(capital()) + ')'; return; }
+        if (t.id === 'a-add') { var sgn = document.querySelector('#a-sg .on') && document.querySelector('#a-sg .on').getAttribute('data-sg') === '-1' ? -1 : 1, amt = sgn * (+String($('a-mt').value).replace(',', '.') || 0); if ($('a-cap').checked) capTransfer(p2, amt, $('a-lib').value.trim(), $('a-date').value); else addAmount(p2, amt, $('a-lib').value.trim(), $('a-date').value); return; }
+        var ad = t.closest('[data-ad]'); if (ad) { var ax = (p2.apports || []).filter(function (y) { return y.id === ad.getAttribute('data-ad'); })[0]; if (ax && confirm('Supprimer ce montant (' + eur(ax.mt) + ') ?' + (ax.cap ? '\n\nIl provient du capital : ' + eur(Math.abs(ax.mt)) + (ax.mt > 0 ? ' retourne' : ' ressort') + ' dans le capital des projets.' : ''))) { p2.apports = p2.apports.filter(function (y) { return y !== ax; }); if (ax.cap) capDrop(ax.cap); hist(p2, 'Montant supprimé : ' + eur(ax.mt) + (ax.cap ? ' (capital rétabli)' : '')); touch(p2); save(); sheetRender(); } return; }
         if (t.id === 'b-bok') { var nb = Math.max(0, +$('b-bud').value || 0); if (nb !== (+p2.budget || 0)) { hist(p2, 'Prix du projet : ' + eur(p2.budget || 0) + ' → ' + eur(nb)); p2.budget = nb; touch(p2); save(); toast('💶 Prix du projet mis à jour'); } return sheetRender(); }
         if (t.id === 'd-add') {
             var lib = $('d-lib').value.trim(), mt = +String($('d-mt').value).replace(',', '.');
@@ -865,6 +938,8 @@ function bind() {
     });
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && $('mset').classList.contains('on')) { $('mset').classList.remove('on'); return; }
+        if (e.key === 'Escape' && $('mcap').classList.contains('on')) { $('mcap').classList.remove('on'); return; }
+        if (e.key === 'Enter' && e.target.closest && e.target.closest('#mcap') && e.target.tagName === 'INPUT') { e.preventDefault(); capOk(); return; }
         if (e.key === 'Escape') { if ($('mamt').classList.contains('on')) $('mamt').classList.remove('on'); else if ($('mnew').classList.contains('on')) $('mnew').classList.remove('on'); else if (CUR) closeSheet(); }
         if (e.key === 'Enter' && e.target.id === 'v-nom') { e.preventDefault(); var p = byId(CUR); if (p) addVoters(p); }
         if (e.key === 'Enter' && (e.target.id === 'd-lib' || e.target.id === 'd-mt')) { e.preventDefault(); $('d-add').click(); }
@@ -904,9 +979,9 @@ var QA = null;
 function openAmount(id) {
     var p = byId(id); if (!p) return; QA = id;
     $('q-title').textContent = p.nom; $('q-info').innerHTML = 'Prix <b>' + eur(+p.budget || 0) + '</b> · disponible <b style="color:' + (dispo(p) < 0 ? 'var(--crit)' : 'var(--good)') + '">' + eur(dispo(p)) + '</b> · reste à financer <b>' + eur(aFinancer(p)) + '</b>';
-    $('q-mt').value = ''; $('q-lib').value = ''; $('q-date').value = ymd();
+    $('q-mt').value = ''; $('q-lib').value = ''; $('q-date').value = ymd(); $('q-cap').checked = false;
     document.querySelectorAll('#q-sg button').forEach(function (x, i) { x.classList.toggle('on', i === 0); }); $('q-ok').textContent = '💵 Ajouter le montant'; $('q-ok').className = 'btn ok';
-    $('mamt').classList.add('on'); setTimeout(function () { $('q-mt').focus(); }, 80);
+    qCapTxt(); $('mamt').classList.add('on'); setTimeout(function () { $('q-mt').focus(); }, 80);
 }
 function addAmount(p, mt, lib, date, quick) {
     mt = Math.round((+mt || 0) * 100) / 100;
@@ -918,6 +993,86 @@ function addAmount(p, mt, lib, date, quick) {
     if (CUR === p.id) sheetRender();
     return true;
 }
+/* fenêtre « + € » : case « capital » (prendre dans le capital / y remettre) */
+function qCapTxt() {
+    var neg = document.querySelector('#q-sg .on') && document.querySelector('#q-sg .on').getAttribute('data-sg') === '-1', c = capital();
+    $('q-capt').textContent = neg ? '💰 Remettre ce montant dans le capital des projets' : '💰 Prendre dans le capital des projets (disponible ' + eur(c) + ')';
+    var dis = !neg && c <= 0; $('q-capw').classList.toggle('dis', dis); $('q-cap').disabled = dis; if (dis) $('q-cap').checked = false;
+    $('q-ok').textContent = neg ? ($('q-cap').checked ? '↩️ Remettre dans le capital' : '➖ Retirer le montant') : ($('q-cap').checked ? '➡️ Affecter depuis le capital' : '💵 Ajouter le montant');
+}
+/* transfert capital ⇄ projet : mt > 0 = affectation (sort du capital), mt < 0 = retour au capital */
+function capTransfer(p, mt, lib, date, quick) {
+    mt = Math.round((+mt || 0) * 100) / 100;
+    if (!mt) { var el = $(quick ? 'q-mt' : 'a-mt') || $('c-mt'); if (el) el.focus(); toast('Indiquez le montant'); return false; }
+    var c = capital();
+    if (mt > 0 && mt > c + 0.005) { toast('⚠️ Capital insuffisant : ' + eur(c) + ' disponible'); return false; }
+    if (mt < 0 && -mt > funded(p) + 0.005) { toast('⚠️ Ce projet n’a que ' + eur(funded(p)) + ' de financement'); return false; }
+    var apId = uid('A'), mvId = uid('C'), now = Date.now(), d = date || ymd();
+    (p.apports = p.apports || []).push({ id: apId, date: d, lib: (mt > 0 ? 'Capital' : 'Retour au capital') + (lib ? ' · ' + lib : ''), mt: mt, t: now, by: who(), cap: mvId });
+    DOC.capital.mv.push({ id: mvId, t: now, date: d, mt: -mt, lib: lib || (mt > 0 ? 'Affectation' : 'Retour du projet'), by: who(), pj: p.id, pjNom: p.nom, ap: apId });
+    hist(p, (mt > 0 ? '💰 Affecté depuis le capital : ' : '↩️ Remis dans le capital : ') + eur(Math.abs(mt)) + ' · disponible ' + eur(dispo(p)));
+    touch(p); save();
+    toast(mt > 0 ? '💰 ' + eur(mt) + ' affecté à « ' + p.nom + ' » · capital restant ' + eur(capital()) + (aFinancer(p) > 0 ? ' · reste à financer ' + eur(aFinancer(p)) : ' · ✅ projet financé') : '↩️ ' + eur(-mt) + ' remis dans le capital · capital ' + eur(capital()));
+    if (CUR === p.id) sheetRender();
+    if ($('mcap').classList.contains('on')) capRender();
+    return true;
+}
+/* annule un mouvement de capital (repère de suppression pour la synchronisation entre appareils) */
+function capDrop(id) { DOC.deleted[id] = Date.now(); DOC.capital.mv = capMv().filter(function (m) { return m.id !== id; }); }
+function capDel(id) {
+    var m = capMv().filter(function (x) { return x.id === id; })[0]; if (!m) return;
+    var p = m.pj ? byId(m.pj) : null;
+    if (!confirm(m.pj ? (+m.mt < 0 ? 'Annuler l’affectation de ' + eur(-m.mt) + ' au projet « ' : 'Annuler le retour de ' + eur(m.mt) + ' depuis le projet « ') + (p ? p.nom : m.pjNom || '?') + ' » ?\n\nLe projet et le capital sont corrigés ensemble.' : 'Supprimer ce mouvement du capital (' + (m.mt < 0 ? '−' : '+') + eur(Math.abs(m.mt)) + ') ?')) return;
+    capDrop(id);
+    if (p) { p.apports = (p.apports || []).filter(function (a) { return a.id !== m.ap; }); hist(p, '↩️ Mouvement du capital annulé : ' + eur(Math.abs(m.mt))); touch(p); }
+    save(); capRender(); if (CUR && p && CUR === p.id) sheetRender(); toast('Mouvement annulé · capital ' + eur(capital()));
+}
+var CAPM = 'add';
+function openCapital(mode) {
+    CAPM = mode === 'aff' ? 'aff' : mode === 'out' ? 'out' : 'add';
+    $('c-mt').value = ''; $('c-lib').value = ''; $('c-date').value = ymd();
+    capOptions(true); capRender(true); $('mcap').classList.add('on');
+}
+/* liste des projets (actifs, par priorité) ; au besoin, présélection du 1ᵉʳ projet qui n'est pas entièrement financé */
+function capOptions(next) {
+    var A = active(), cur = $('c-pj').value;
+    $('c-pj').innerHTML = A.length ? A.map(function (p) { return '<option value="' + esc(p.id) + '">' + rankOf(p) + '. ' + esc(p.nom) + (aFinancer(p) > 0 ? ' — reste à financer ' + eur0(aFinancer(p)) : ' — ✅ financé') + '</option>'; }).join('') : '<option value="">Aucun projet actif</option>';
+    var cp = byId(cur), need = A.filter(function (p) { return aFinancer(p) > 0; })[0];
+    $('c-pj').value = cp && isActive(cp) && !(next && aFinancer(cp) <= 0 && need) ? cur : need ? need.id : (A[0] ? A[0].id : '');
+}
+function capRender(modeChanged) {
+    var c = capital();
+    $('c-sum').innerHTML = '<div><span>Capital disponible</span><b class="num" style="color:' + (c < 0 ? 'var(--crit)' : 'var(--good)') + '">' + eur(c) + '</b></div><div><span>Total apporté</span><b class="num">' + eur(capIn()) + '</b></div><div><span>Affecté aux projets</span><b class="num">' + eur(capAff()) + '</b></div>';
+    document.querySelectorAll('#c-sg button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-cs') === CAPM); });
+    var aff = CAPM === 'aff';
+    $('c-pjw').style.display = aff ? '' : 'none'; $('c-rest').style.display = aff ? '' : 'none'; $('c-all').style.display = aff || CAPM === 'out' ? '' : 'none';
+    $('c-libl').textContent = aff ? 'Note (facultatif)' : CAPM === 'out' ? 'Motif' : 'Origine';
+    $('c-lib').placeholder = aff ? 'ex : 1ʳᵉ tranche' : CAPM === 'out' ? 'ex : remboursement' : 'ex : épargne';
+    $('c-ok').textContent = aff ? '➡️ Affecter au projet' : CAPM === 'out' ? '➖ Retirer du capital' : '➕ Ajouter au capital'; $('c-ok').className = 'btn ' + (CAPM === 'out' ? 'dan' : 'ok');
+    var pj = byId($('c-pj').value); $('c-pjh').textContent = pj ? 'Prix ' + eur(+pj.budget || 0) + ' · disponible ' + eur(dispo(pj)) + ' · reste à financer ' + eur(aFinancer(pj)) : '';
+    var L = capMv().slice().sort(function (x, y) { return (y.t || 0) - (x.t || 0); });
+    $('c-hist').innerHTML = '<h4>🕘 Mouvements du capital' + (L.length ? ' (' + L.length + ')' : '') + '</h4>' + (L.length ? '<table class="tbl"><tbody>' + L.slice(0, 60).map(function (m) {
+        var p = m.pj ? byId(m.pj) : null, neg = +m.mt < 0;
+        return '<tr><td>' + fmtD(m.date) + '<br><small style="color:var(--mute);font-weight:700">' + esc(m.by || '') + '</small></td><td>'
+            + (m.pj ? (neg ? '➡️ ' : '↩️ ') + esc(p ? p.nom : (m.pjNom || 'projet supprimé')) + (m.lib && !/^(Affectation|Retour du projet)$/.test(m.lib) ? '<br><small style="color:var(--mute);font-weight:700">' + esc(m.lib) + '</small>' : '') : (neg ? '➖ ' : '➕ ') + esc(m.lib || (neg ? 'Retrait' : 'Apport')))
+            + '</td><td class="r num"><b style="color:' + (neg ? 'var(--crit)' : 'var(--good)') + '">' + (neg ? '−' : '+') + eur(Math.abs(+m.mt)) + '</b></td><td class="r"><button class="x" data-cdel="' + esc(m.id) + '" title="' + (m.pj ? 'Annuler ce transfert' : 'Supprimer') + '">✕</button></td></tr>';
+    }).join('') + '</tbody></table>' : '<div class="hint">Aucun mouvement : ajoutez votre capital (épargne, apport…), puis affectez-le à vos projets.</div>');
+    if (modeChanged) setTimeout(function () { $('c-mt').focus(); }, 60);
+}
+function capOk() {
+    var mt = Math.round((+String($('c-mt').value).replace(',', '.') || 0) * 100) / 100, lib = $('c-lib').value.trim(), d = $('c-date').value || ymd();
+    if (mt <= 0) { $('c-mt').focus(); return toast('Indiquez le montant'); }
+    if (CAPM === 'aff') { var p = byId($('c-pj').value); if (!p) return toast('Choisissez un projet'); if (capTransfer(p, mt, lib, d)) { $('c-mt').value = ''; $('c-lib').value = ''; capOptions(true); capRender(); } return; }
+    if (CAPM === 'out' && mt > capital() + 0.005 && !confirm('Le capital disponible n’est que de ' + eur(capital()) + '. Retirer quand même ' + eur(mt) + ' (capital négatif) ?')) return;
+    DOC.capital.mv.push({ id: uid('C'), t: Date.now(), date: d, mt: CAPM === 'out' ? -mt : mt, lib: lib || (CAPM === 'out' ? 'Retrait' : 'Apport au capital'), by: who() });
+    save(); capRender(); $('c-mt').value = ''; $('c-lib').value = '';
+    toast((CAPM === 'out' ? '➖ ' + eur(mt) + ' retiré' : '💰 +' + eur(mt) + ' ajouté') + ' · capital disponible ' + eur(capital()));
+}
+document.addEventListener('change', function (e) {
+    var t = e.target; if (!t) return;
+    if (t.id === 'c-pj') capRender();
+    if (t.id === 'a-cap' && t.checked && capital() <= 0 && !(document.querySelector('#a-sg .on') && document.querySelector('#a-sg .on').getAttribute('data-sg') === '-1')) { t.checked = false; toast('Le capital des projets est vide : ajoutez-y d’abord un montant'); }
+});
 function addVoters(p) {
     var names = $('v-nom').value.split(/[,;\n]/).map(function (x) { return x.trim(); }).filter(Boolean); if (!names.length) { $('v-nom').focus(); return; }
     var have = (p.votants || []).map(function (x) { return x.nom.toLowerCase(); }), added = [];
@@ -1047,7 +1202,7 @@ function merge(a, b) {
     (first.projets || []).concat(second.projets || []).forEach(function (p) { if (p && p.id && ids.indexOf(p.id) < 0) ids.push(p.id); });
     var out = ids.map(function (id) { return map[id]; }).filter(function (p) { return p && !(del[p.id] && del[p.id] >= (+p.updatedAt || 0)); });
     var act = out.filter(isActive), ina = out.filter(function (p) { return !isActive(p); });
-    return { v: 1, projets: act.concat(ina), deleted: del, updatedAt: Math.max(+a.updatedAt || 0, +b.updatedAt || 0), orderAt: Math.max(+a.orderAt || 0, +b.orderAt || 0) };
+    return { v: 1, projets: act.concat(ina), deleted: del, capital: mergeCap(a, b, del), updatedAt: Math.max(+a.updatedAt || 0, +b.updatedAt || 0), orderAt: Math.max(+a.orderAt || 0, +b.orderAt || 0) };
 }
 
 /* ───────────── GitHub (sauvegarde par token) ─────────────
@@ -1138,8 +1293,8 @@ function ghCreateRepo() {
 }
 function ghApply(remote) {
     if (!remote || !Array.isArray(remote.projets)) return { changed: false, needs: true };
-    var before = JSON.stringify(DOC.projets), m = merge(DOC, remote), changed = JSON.stringify(m.projets) !== before, needs = JSON.stringify(m.projets) !== JSON.stringify(remote.projets);
-    DOC = m; try { localStorage.setItem(KEY, JSON.stringify(DOC)); } catch (e) {}
+    var before = docSig(DOC), m = merge(DOC, remote), changed = docSig(m) !== before, needs = docSig(m) !== docSig(remote);
+    DOC = m; try { localStorage.setItem(KEY, JSON.stringify(DOC)); } catch (e) {} capMirror();
     return { changed: changed, needs: needs };
 }
 function ghPull(mode) {
@@ -1260,10 +1415,10 @@ function drivePull(manual) {
         return api('https://www.googleapis.com/drive/v3/files/' + id + '?alt=media').then(function (r) { if (!r.ok) throw new Error('Lecture Drive ' + r.status); return r.json(); }).then(function (remote) {
             GD.pulled = Date.now();
             if (!remote || !Array.isArray(remote.projets)) return;
-            var before = JSON.stringify(DOC.projets), m = merge(DOC, remote);
-            var changedLocal = JSON.stringify(m.projets) !== before;
-            var remoteNeeds = JSON.stringify(m.projets) !== JSON.stringify(remote.projets);
-            DOC = m; try { localStorage.setItem(KEY, JSON.stringify(DOC)); } catch (e) {}
+            var before = docSig(DOC), m = merge(DOC, remote);
+            var changedLocal = docSig(m) !== before;
+            var remoteNeeds = docSig(m) !== docSig(remote);
+            DOC = m; try { localStorage.setItem(KEY, JSON.stringify(DOC)); } catch (e) {} capMirror();
             if (remoteNeeds) { GD.dirty = true; try { localStorage.setItem('covo_projets_pending', '1'); } catch (e) {} }
             GD.restored = Date.now(); try { localStorage.setItem('covo_projets_restored', String(GD.restored)); } catch (e) {}
             if (changedLocal) { render(); if (CUR && !editing()) sheetRender(); }
