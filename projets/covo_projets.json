@@ -1,9 +1,77 @@
 {
  "v": 1,
- "projets": [],
+ "projets": [
+  {
+   "id": "PJ-MVNUB5P1JM8",
+   "nom": "Étagère gondole",
+   "images": [],
+   "apports": [
+    {
+     "id": "A-MVNUCZUTP9R",
+     "date": "2026-10-25",
+     "lib": "Apport",
+     "mt": 150,
+     "t": 1792933579397,
+     "by": "Admin-Développeur"
+    }
+   ],
+   "budget": 500,
+   "cat": "Aménagement",
+   "fin": "",
+   "desc": "",
+   "statut": "idee",
+   "regle": "majorite",
+   "depenses": [],
+   "votants": [],
+   "avancement": 0,
+   "createdAt": 1792933493653,
+   "updatedAt": 1792933579398,
+   "hist": [
+    {
+     "t": 1792933493653,
+     "txt": "Projet créé · prix 500,00 €",
+     "by": "Admin-Développeur"
+    },
+    {
+     "t": 1792933555356,
+     "txt": "Priorité 2 → 1",
+     "by": "Admin-Développeur"
+    },
+    {
+     "t": 1792933579398,
+     "txt": "💵 Montant ajouté 150,00 € · disponible 150,00 €",
+     "by": "Admin-Développeur"
+    }
+   ]
+  },
+  {
+   "id": "PJ-MVNUA7ECE51",
+   "nom": "Climatisation 2CV",
+   "images": [],
+   "apports": [],
+   "budget": 2000,
+   "cat": "Travaux",
+   "fin": "",
+   "desc": "",
+   "statut": "idee",
+   "regle": "majorite",
+   "depenses": [],
+   "votants": [],
+   "avancement": 0,
+   "createdAt": 1792933449204,
+   "updatedAt": 1792933449204,
+   "hist": [
+    {
+     "t": 1792933449204,
+     "txt": "Projet créé · prix 2 000,00 €",
+     "by": "Admin-Développeur"
+    }
+   ]
+  }
+ ],
  "deleted": {
   "PJ-MVNROZVN3OQ": 1792929126476
  },
- "updatedAt": 1792929126481,
- "orderAt": 1792929126481
+ "updatedAt": 1792933579398,
+ "orderAt": 1792933555356
 }
