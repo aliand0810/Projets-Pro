@@ -278,6 +278,13 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
 #zoom.on{display:flex;}
 #zoom img{max-width:100%;max-height:calc(100vh - 90px);border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
 #zoom a{color:#fff;font-weight:800;font-size:.86rem;}
+/* bandeau d'installation */
+#ibar{display:none;align-items:center;gap:10px;flex-wrap:wrap;max-width:1100px;margin:12px auto 0;padding:10px 12px;border-radius:14px;background:var(--accb);border:1px solid color-mix(in srgb,var(--acc) 35%,transparent);}
+#ibar.on{display:flex;}
+#ibar .ic{font-size:1.4rem;}
+#ibar .tx{flex:1;min-width:200px;font-size:.8rem;font-weight:600;color:var(--ink2);}
+#ibar .tx b{display:block;font-size:.9rem;color:var(--ink);}
+@media (max-width:1128px){#ibar{margin:12px 14px 0;}}
 /* bandeau de restauration */
 #rbar{display:none;align-items:center;gap:10px;flex-wrap:wrap;max-width:1100px;margin:12px auto 0;padding:10px 12px;border-radius:14px;background:var(--warnb);border:1px solid color-mix(in srgb,var(--warn) 40%,transparent);font-size:.84rem;font-weight:700;color:var(--ink);}
 #rbar.on{display:flex;}
@@ -299,6 +306,7 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
   </div>
 </header>
 <div id="rbar"><span>☁️ Les dernières sauvegardes de vos projets n’ont pas pu être récupérées automatiquement.</span><button class="btn ok" id="r-go">⤵️ Récupérer maintenant</button><button class="x2" id="r-x" aria-label="Fermer">✕</button></div>
+<div id="ibar"><span class="ic">📲</span><span class="tx"><b>Installez Projets Pro</b>Une icône sur votre téléphone ou votre ordinateur : l’application s’ouvre en plein écran et COVO Pro la lance directement.</span><button class="btn pri" id="i-go">Installer</button><button class="x2" id="i-x" aria-label="Ne plus proposer">✕</button></div>
 <main id="main"></main>
 <div id="zoom" aria-label="Image du projet"></div>
 <button class="fab" id="fab" style="display:none">➕ Projet</button>
@@ -757,6 +765,8 @@ function bind() {
     document.addEventListener('pointermove', dragMove);
     document.addEventListener('pointerup', dragEnd); document.addEventListener('pointercancel', dragEnd);
     $('b-inst').onclick = install;
+    $('i-go').onclick = install;
+    $('i-x').onclick = function () { lsSet('covo_pwa_dismiss_' + PWA, '1'); $('ibar').classList.remove('on'); };
     $('r-go').onclick = function () { $('rbar').classList.remove('on'); driveConnect(false, true); };
     $('r-x').onclick = function () { $('rbar').classList.remove('on'); };
     $('b-menu').onclick = function () { $('menu').classList.toggle('on'); $('m-inf').textContent = 'Dernière sauvegarde Drive : ' + (GD.last ? fmtDT(GD.last) : 'jamais') + ' · dernière restauration : ' + (GD.restored || +ls('covo_projets_restored', '0') ? fmtDT(GD.restored || +ls('covo_projets_restored', '0')) : 'jamais') + ' · ' + DOC.projets.length + ' projet(s)'; };
@@ -970,7 +980,7 @@ function gate() {
     if (isAdm(cu) && licence()) { alt.style.display = ''; alt.textContent = '⚡ Continuer avec ma session COVO Pro (' + (cu.username || cu.name || 'admin') + ')'; } else alt.style.display = 'none';
     $('gate').classList.add('on'); return false;
 }
-function onLogged() { $('gate').classList.remove('on'); render(); driveBoot(); }
+function onLogged() { $('gate').classList.remove('on'); render(); driveBoot(); instBtn(); }
 function loginUi() {
     $('g-eye').onclick = function () { var i = $('g-code'); i.type = i.type === 'password' ? 'text' : 'password'; i.focus(); };
     $('g-form').addEventListener('submit', function (e) {
@@ -1000,7 +1010,20 @@ function driveBoot() {
 /* ───────────── Application installable (téléphone, tablette, ordinateur) ───────────── */
 function standalone() { return (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true; }
 function isIOS() { return /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); }
-function instBtn() { var b = $('b-inst'); if (b) b.style.display = standalone() ? 'none' : ''; var m = $('m-install'); if (m) m.style.display = standalone() ? 'none' : ''; }
+/* Mêmes réglages que les autres satellites COVO :
+   • covo_pwa_installed_projetspro = 1 dès que l'application installée a été ouverte (ou installée)
+     → plus jamais de bouton « Installer », même ouverte dans un onglet du navigateur
+   • covo_pwa_proto_projetspro = 1 quand le lien web+covoprojets: fonctionne → COVO Pro ouvre
+     directement l'application installée (fenêtre de l'appli, pas un onglet du navigateur) */
+var PWA = 'projetspro';
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+function installed() { return standalone() || ls('covo_pwa_installed_' + PWA, '') === '1'; }
+function instBtn() {
+    var show = !installed(), b = $('b-inst'), m = $('m-install'), bn = $('ibar');
+    if (b) b.style.display = show ? '' : 'none';
+    if (m) m.style.display = show ? '' : 'none';
+    if (bn) bn.classList.toggle('on', show && !!window._ppInstall && ls('covo_pwa_dismiss_' + PWA, '') !== '1' && !!session());
+}
 function install() {
     if (window._ppInstall) { var ev = window._ppInstall; window._ppInstall = null; ev.prompt(); ev.userChoice && ev.userChoice.then(function (r) { if (r && r.outcome === 'accepted') toast('📲 Projets Pro est installé sur cet appareil'); instBtn(); }); return; }
     var h;
@@ -1018,8 +1041,15 @@ function install() {
 }
 (function () {
     try { var th = localStorage.getItem('covo_pp_theme'); if (th) document.documentElement.setAttribute('data-theme', th); } catch (e) {}
-    window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); window._ppInstall = e; instBtn(); });
-    window.addEventListener('appinstalled', function () { window._ppInstall = null; instBtn(); toast('📲 Projets Pro est installé'); });
+    if (standalone()) lsSet('covo_pwa_installed_' + PWA, '1');
+    // lancée depuis COVO Pro par le lien web+covoprojets: → l'ouverture directe fonctionne
+    try { if (/[?&]ouvrir=/.test(location.search)) { lsSet('covo_pwa_proto_' + PWA, '1'); lsSet('covo_pwa_installed_' + PWA, '1'); history.replaceState(null, '', location.pathname); } } catch (e) {}
+    try { if ('launchQueue' in window) window.launchQueue.setConsumer(function (p) { if (p && p.targetURL && /[?&]ouvrir=/.test(p.targetURL)) { lsSet('covo_pwa_proto_' + PWA, '1'); lsSet('covo_pwa_installed_' + PWA, '1'); } }); } catch (e) {}
+    window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); window._ppInstall = installed() ? null : e; instBtn(); });
+    window.addEventListener('appinstalled', function () { window._ppInstall = null; lsSet('covo_pwa_installed_' + PWA, '1'); lsSet('covo_pwa_proto_' + PWA, '1'); instBtn(); toast('📲 Projets Pro est installé — COVO Pro l’ouvrira directement dans son application'); });
+    try { var mq = matchMedia('(display-mode: standalone)'); (mq.addEventListener ? mq.addEventListener('change', function () { if (mq.matches) lsSet('covo_pwa_installed_' + PWA, '1'); instBtn(); }) : mq.addListener(function () { instBtn(); })); } catch (e) {}
+    // installation déjà présente sur l'appareil (Chrome/Edge) : on le mémorise même depuis un onglet du navigateur
+    try { if (navigator.getInstalledRelatedApps) navigator.getInstalledRelatedApps().then(function (l) { if (l && l.length) { lsSet('covo_pwa_installed_' + PWA, '1'); instBtn(); } }).catch(function () {}); } catch (e) {}
     if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.serviceWorker.register('sw.js').catch(function () {}); }
     instBtn();
 })();
