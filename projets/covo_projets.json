@@ -4,7 +4,9 @@
   {
    "id": "PJ-MVNUB5P1JM8",
    "nom": "Étagère gondole",
-   "images": [],
+   "images": [
+    "https://sc04.alicdn.com/kf/Hda5e321ca99c45adb29428dc3867770bH.jpg"
+   ],
    "apports": [],
    "budget": 500,
    "cat": "Aménagement",
@@ -16,7 +18,7 @@
    "votants": [],
    "avancement": 0,
    "createdAt": 1792933493653,
-   "updatedAt": 1792959597515,
+   "updatedAt": 1792964803930,
    "hist": [
     {
      "t": 1792933493653,
@@ -36,6 +38,11 @@
     {
      "t": 1792959597515,
      "txt": "Montant supprimé : 150,00 €",
+     "by": "Admin-Développeur"
+    },
+    {
+     "t": 1792964803930,
+     "txt": "🖼️ Image jointe",
      "by": "Admin-Développeur"
     }
    ]
@@ -80,6 +87,6 @@
    }
   ]
  },
- "updatedAt": 1792959597515,
+ "updatedAt": 1792964803930,
  "orderAt": 1792933555356
 }
