@@ -5,16 +5,7 @@
    "id": "PJ-MVNUB5P1JM8",
    "nom": "Étagère gondole",
    "images": [],
-   "apports": [
-    {
-     "id": "A-MVNUCZUTP9R",
-     "date": "2026-10-25",
-     "lib": "Apport",
-     "mt": 150,
-     "t": 1792933579397,
-     "by": "Admin-Développeur"
-    }
-   ],
+   "apports": [],
    "budget": 500,
    "cat": "Aménagement",
    "fin": "",
@@ -25,7 +16,7 @@
    "votants": [],
    "avancement": 0,
    "createdAt": 1792933493653,
-   "updatedAt": 1792933579398,
+   "updatedAt": 1792959597515,
    "hist": [
     {
      "t": 1792933493653,
@@ -40,6 +31,11 @@
     {
      "t": 1792933579398,
      "txt": "💵 Montant ajouté 150,00 € · disponible 150,00 €",
+     "by": "Admin-Développeur"
+    },
+    {
+     "t": 1792959597515,
+     "txt": "Montant supprimé : 150,00 €",
      "by": "Admin-Développeur"
     }
    ]
@@ -84,6 +80,6 @@
    }
   ]
  },
- "updatedAt": 1792959570122,
+ "updatedAt": 1792959597515,
  "orderAt": 1792933555356
 }
