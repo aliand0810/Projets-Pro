@@ -325,6 +325,12 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
 .ghf input{width:100%;padding:9px 11px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font-size:.86rem;}
 .ghf label{display:block;font-size:.66rem;font-weight:900;color:var(--mute);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
 .ghst{font-size:.78rem;font-weight:800;margin-top:8px;}.ghst.ok{color:var(--good);}.ghst.ko{color:var(--crit);}
+.ghdg{margin-top:8px;padding:10px 12px;border-radius:12px;background:rgba(229,57,53,.06);border:1px solid rgba(229,57,53,.25);font-size:.78rem;font-weight:600;color:var(--ink2);line-height:1.45;}
+.ghdg ul{margin:0 0 6px;padding-left:18px;}.ghdg .btn{margin:4px 6px 0 0;}
+.ghl{font-weight:900;color:var(--ink);margin-top:6px;}
+.ghrs{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.ghrs button{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 10px;font-size:.76rem;font-weight:800;cursor:pointer;font-family:inherit;}
+.ghrs button:hover{border-color:#2a78d6;}
 @media (max-width:560px){.ghf{grid-template-columns:1fr;}}
 /* bandeau d'installation */
 #ibar{display:none;align-items:center;gap:10px;flex-wrap:wrap;margin:12px clamp(12px,2vw,28px) 0;padding:10px 12px;border-radius:14px;background:var(--accb);border:1px solid color-mix(in srgb,var(--acc) 35%,transparent);}
@@ -780,6 +786,8 @@ function bind() {
         var qa = t.closest('[data-qa]'); if (qa) return setAct(qa.getAttribute('data-qa'));
         if (t.id === 'qr-lic') { QRLIC = t.checked; return drawQR(); }
         if (t.id === 'qr-gh') { QRGH = t.checked; return drawQR(); }
+        var gr = t.closest('[data-ghr]'); if (gr) { var gp = gr.getAttribute('data-ghr').split('/'); $('gh-own').value = gp[0]; $('gh-rep').value = gp.slice(1).join('/'); return setAct('ghsave'); }
+        var gb = t.closest('[data-ghbr]'); if (gb) { $('gh-br').value = gb.getAttribute('data-ghbr'); return setAct('ghsave'); }
         var ge = t.closest('[data-ghe]'); if (ge) { var gi = $('gh-tok'); gi.type = gi.type === 'password' ? 'text' : 'password'; return; }
         if (t.closest('[data-iclose]') || t.id === 'minst') { $('minst').classList.remove('on'); return; }
         var qc = t.closest('#q-ch [data-q]'); if (qc) { var qi = $('q-mt'); qi.value = Math.round(((+String(qi.value).replace(',', '.') || 0) + (+qc.getAttribute('data-q'))) * 100) / 100; qi.focus(); return; }
@@ -925,19 +933,32 @@ function ghSection() {
         + '<div><label>Fichier</label><input id="gh-path" autocomplete="off" spellcheck="false" value="' + esc(c.path || 'projets/covo_projets.json') + '"></div></div>'
         + '<div class="qrb" style="margin-top:10px"><button class="btn pri" data-qa="ghsave">💾 Enregistrer et tester</button>' + (ok ? '<button class="btn sec" data-qa="ghpush">🐙 Sauvegarder maintenant</button><button class="btn sec" data-qa="ghpull">⤵️ Restaurer</button><button class="btn dan" data-qa="ghdel">Retirer</button>' : '') + '</div>'
         + '<div class="ghst ' + (GH.err ? 'ko' : ok ? 'ok' : '') + '" id="gh-st">' + (GH.err ? '❌ ' + esc(GH.err) : ok ? '✅ Actif · dernière sauvegarde : ' + (GH.last ? fmtDT(GH.last) : 'jamais') + ' · dernière restauration : ' + (GH.restored ? fmtDT(GH.restored) : 'jamais') : 'Non configuré') + '</div>'
-        + '<details style="margin-top:8px"><summary class="hint" style="cursor:pointer;margin:0">Comment créer le token ?</summary><ol style="font-size:.78rem;color:var(--ink2);font-weight:600;line-height:1.5;padding-left:18px;margin:6px 0 0">'
+        + ghDiagHtml(c)
+        + '<details style="margin-top:8px"' + (GH.diag ? ' open' : '') + '><summary class="hint" style="cursor:pointer;margin:0">Comment créer le token ?</summary><ol style="font-size:.78rem;color:var(--ink2);font-weight:600;line-height:1.5;padding-left:18px;margin:6px 0 0">'
         + '<li>Sur GitHub, créez un dépôt <b>privé</b> (ex : covo-donnees).</li><li>Profil → Settings → Developer settings → Personal access tokens → <b>Fine-grained tokens</b> → Generate new token.</li><li>Repository access : <b>Only select repositories</b> → ce dépôt. Permissions → <b>Contents : Read and write</b>.</li><li>Copiez le token ici, puis « Enregistrer et tester ».</li></ol></details></div>';
+}
+function ghDiagHtml(c) {
+    var D = GH.diag; if (!D || !GH.err) return '';
+    var h = '<div class="ghdg">';
+    if (D.tips && D.tips.length) h += '<ul>' + D.tips.map(function (t) { return '<li>' + t + '</li>'; }).join('') + '</ul>';
+    if (D.fix) h += '<button class="btn sec" data-ghr="' + esc(D.fix.own) + '/' + esc(D.fix.rep) + '">✔️ Utiliser ' + esc(D.fix.own) + '/' + esc(D.fix.rep) + '</button>';
+    if (D.fixBr) h += '<button class="btn sec" data-ghbr="' + esc(D.fixBr) + '">✔️ Utiliser la branche « ' + esc(D.fixBr) + ' »</button>';
+    if (D.repos && D.repos.length) h += '<div class="ghl">Dépôts visibles avec ce token (touchez pour choisir) :</div><div class="ghrs">' + D.repos.slice(0, 30).map(function (x) { return '<button type="button" data-ghr="' + esc(x.own) + '/' + esc(x.rep) + '">' + (x.priv ? '🔒 ' : '') + esc(x.own) + '/' + esc(x.rep) + '</button>'; }).join('') + '</div>';
+    else if (D.login) h += '<div class="ghl">Aucun dépôt n’est autorisé pour ce token.</div>';
+    if (D.canCreate) h += '<div class="qrb" style="margin-top:8px"><button class="btn ok" data-qa="ghcreate">➕ Créer le dépôt privé « ' + esc(c.rep || '') + ' »</button><a class="btn sec" href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener">🔑 Modifier mes tokens</a></div>';
+    return h + '</div>';
 }
 function setAct(a) {
     if (a === 'ghsave') {
-        var c = { tok: $('gh-tok').value.trim(), own: $('gh-own').value.trim(), rep: $('gh-rep').value.trim(), br: $('gh-br').value.trim() || 'main', path: ($('gh-path').value.trim() || 'projets/covo_projets.json').replace(/^\/+/, '') };
+        var c = { tok: $('gh-tok').value.replace(/^\s*(bearer|token)\s+/i, '').replace(/\s+/g, ''), own: $('gh-own').value.trim(), rep: $('gh-rep').value.trim(), br: $('gh-br').value.trim() || 'main', path: ($('gh-path').value.trim() || 'projets/covo_projets.json').replace(/^\/+/, '') };
         if (!c.tok || !c.own || !c.rep) { $('gh-st').className = 'ghst ko'; $('gh-st').textContent = '⚠️ Token, propriétaire et dépôt sont obligatoires'; return; }
         if (!/\.json$/i.test(c.path)) c.path += '.json';
         try { localStorage.setItem(GHK, JSON.stringify(c)); } catch (e) {}
-        GH.sha = null; GH.err = ''; $('gh-st').className = 'ghst'; $('gh-st').textContent = '⏳ Test de la connexion…';
+        GH.sha = null; GH.err = ''; GH.diag = null; GH.empty = false; $('gh-st').className = 'ghst'; $('gh-st').textContent = '⏳ Test de la connexion…';
         ghPull('test').then(function () { if (GH.err) { openSettings(); return; } return ghPush(false).then(function (okp) { toast(okp ? '🐙 GitHub connecté : projets enregistrés et restaurés automatiquement' : '❌ ' + GH.err); openSettings(); }); });
         return;
     }
+    if (a === 'ghcreate') return ghCreateRepo();
     if (a === 'ghpush') { ghPush(true).then(openSettings); return; }
     if (a === 'ghpull') { ghPull('manual').then(openSettings); return; }
     if (a === 'ghdel') { if (!confirm('Ne plus sauvegarder les projets sur GitHub sur cet appareil ?\n\nLe fichier déjà enregistré sur GitHub n’est pas supprimé.')) return; try { localStorage.removeItem(GHK); localStorage.removeItem('covo_pp_gh_pending'); } catch (e) {} GH.err = ''; GH.dirty = false; ghUi(); return openSettings(); }
@@ -1005,13 +1026,67 @@ function ghUi() {
 /* lecture : renvoie { doc, sha } (doc = null si le fichier n'existe pas encore) */
 function ghGet(c) {
     return fetch(ghApi(c) + '?ref=' + encodeURIComponent(c.br) + '&t=' + Date.now(), { headers: ghHdr(c), cache: 'no-store' }).then(function (r) {
-        if (r.status === 404) return fetch('https://api.github.com/repos/' + encodeURIComponent(c.own) + '/' + encodeURIComponent(c.rep), { headers: ghHdr(c) }).then(function (r2) { if (!r2.ok) throw new Error(ghErr(r2)); return { doc: null, sha: null }; });
+        if (r.status === 404) return ghRepoCheck(c);
         if (!r.ok) throw new Error(ghErr(r));
         return r.json().then(function (j) {
             if (j.content && j.encoding === 'base64') return { doc: JSON.parse(b64d(j.content)), sha: j.sha };
             return fetch(ghApi(c) + '?ref=' + encodeURIComponent(c.br), { headers: ghHdr(c, true), cache: 'no-store' }).then(function (r3) { if (!r3.ok) throw new Error(ghErr(r3)); return r3.json(); }).then(function (d) { return { doc: d, sha: j.sha }; });
         });
     });
+}
+function ghRepo(c) { return 'https://api.github.com/repos/' + encodeURIComponent(c.own) + '/' + encodeURIComponent(c.rep); }
+function ghFail(D) { var e = new Error(D.msg); e.diag = D; throw e; }
+/* fichier absent : le dépôt existe-t-il ? la branche existe-t-elle ? le dépôt est-il vide ? */
+function ghRepoCheck(c) {
+    var H = ghHdr(c);
+    return fetch(ghRepo(c), { headers: H, cache: 'no-store' }).then(function (r) {
+        if (r.status === 401) throw new Error(ghErr(r));
+        if (!r.ok) return ghDiag(c).then(ghFail);
+        return r.json().then(function (R) {
+            return fetch(ghRepo(c) + '/branches?per_page=100', { headers: H, cache: 'no-store' }).then(function (rb) { return rb.ok ? rb.json() : []; }).then(function (B) {
+                B = Array.isArray(B) ? B.map(function (x) { return x.name; }) : [];
+                if (!B.length) { GH.empty = true; return { doc: null, sha: null }; }          // dépôt tout neuf : le 1er envoi crée la branche
+                GH.empty = false;
+                if (B.indexOf(c.br) < 0) ghFail({ msg: 'La branche « ' + c.br + ' » n’existe pas dans ' + c.own + '/' + c.rep + '. Branche principale : « ' + (R.default_branch || B[0]) + ' ».', fixBr: R.default_branch || B[0] });
+                return { doc: null, sha: null };                                               // le fichier sera créé au premier envoi
+            });
+        });
+    });
+}
+/* diagnostic détaillé quand le dépôt n'est pas visible avec ce token */
+function ghDiag(c) {
+    var H = ghHdr(c), D = { login: '', repos: [], msg: '', tips: [] };
+    return fetch('https://api.github.com/user', { headers: H, cache: 'no-store' }).then(function (r) {
+        if (r.status === 401) { D.msg = 'Token GitHub refusé : il est invalide, expiré ou mal copié.'; return D; }
+        return (r.ok ? r.json() : Promise.resolve({})).then(function (u) {
+            D.login = (u && u.login) || '';
+            return fetch('https://api.github.com/user/repos?per_page=100&sort=updated', { headers: H, cache: 'no-store' }).then(function (r2) { return r2.ok ? r2.json() : []; }).catch(function () { return []; });
+        }).then(function (L) {
+            D.repos = (Array.isArray(L) ? L : []).map(function (x) { return { own: x.owner && x.owner.login || '', rep: x.name, priv: !!x.private }; });
+            var same = D.repos.filter(function (x) { return x.rep.toLowerCase() === c.rep.toLowerCase(); })[0];
+            if (same && same.own.toLowerCase() !== c.own.toLowerCase()) { D.msg = 'Le dépôt « ' + c.rep + ' » appartient à « ' + same.own + ' », pas à « ' + c.own + ' ».'; D.fix = same; return D; }
+            D.msg = 'Le dépôt « ' + c.own + '/' + c.rep + ' » est introuvable avec ce token.';
+            if (D.login && D.login.toLowerCase() !== c.own.toLowerCase()) D.tips.push('Ce token appartient au compte GitHub « ' + D.login + ' » : vérifiez le champ « Propriétaire ».');
+            D.tips.push('Vérifiez que le dépôt « ' + c.rep + ' » existe bien sur github.com/' + c.own + ' (même orthographe).');
+            if (/^ghp_/.test(c.tok)) D.tips.push('Token classique (ghp_…) : la case <b>repo</b> doit être cochée pour un dépôt privé.');
+            else D.tips.push('Token « Fine-grained » : <b>Repository access</b> doit inclure ce dépôt (« All repositories », ou « Only select repositories » en cochant « ' + c.rep + ' »). Un token créé <b>avant</b> le dépôt ne le voit pas : modifiez le token sur GitHub (Edit) pour l’ajouter.');
+            D.canCreate = !!D.login && D.login.toLowerCase() === c.own.toLowerCase();
+            return D;
+        });
+    }).catch(function () { D.msg = 'GitHub injoignable (connexion internet ?)'; return D; });
+}
+function ghCreateRepo() {
+    var c = ghCfg(); if (!c) return;
+    $('gh-st').className = 'ghst'; $('gh-st').textContent = '⏳ Création du dépôt privé « ' + c.rep + ' »…';
+    fetch('https://api.github.com/user/repos', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, ghHdr(c)), body: JSON.stringify({ name: c.rep, private: true, auto_init: true, description: 'Sauvegardes COVO Pro / Projets Pro' }) }).then(function (r) {
+        if (r.status === 201) return r.json().then(function (j) {
+            var n = lsJson(GHK, {}); n.br = j.default_branch || 'main'; try { localStorage.setItem(GHK, JSON.stringify(n)); } catch (e) {}
+            toast('✅ Dépôt privé « ' + c.rep + ' » créé'); GH.diag = null; GH.err = ''; GH.sha = null;
+            return new Promise(function (ok) { setTimeout(ok, 1500); }).then(function () { return ghPull('test'); }).then(function () { return GH.err ? false : ghPush(true); }).then(openSettings);
+        });
+        if (r.status === 422) { toast('Ce dépôt existe déjà : ajoutez-le aux dépôts autorisés du token.'); return openSettings(); }
+        GH.err = 'Ce token n’a pas le droit de créer un dépôt. Créez-le sur github.com/new (Private), puis ajoutez-le au token.'; ghUi(); openSettings();
+    }).catch(function () { toast('❌ GitHub injoignable'); });
 }
 function ghApply(remote) {
     if (!remote || !Array.isArray(remote.projets)) return { changed: false, needs: true };
@@ -1023,7 +1098,7 @@ function ghPull(mode) {
     var c = ghCfg(); if (!c) return Promise.resolve(false);
     GH.saving = GH.saving; ghUi();
     return ghGet(c).then(function (g) {
-        GH.sha = g.sha; GH.pulled = Date.now(); GH.err = '';
+        GH.sha = g.sha; GH.pulled = Date.now(); GH.err = ''; GH.diag = null;
         var res = g.doc ? ghApply(g.doc) : { changed: false, needs: DOC.projets.length > 0 };
         GH.restored = Date.now(); try { localStorage.setItem('covo_pp_gh_restored', String(GH.restored)); } catch (e) {}
         if (res.needs && DOC.projets.length) { GH.dirty = true; try { localStorage.setItem('covo_pp_gh_pending', '1'); } catch (e) {} }
@@ -1032,7 +1107,7 @@ function ghPull(mode) {
         else if (mode === 'auto' && res.changed) toast('⤵️ Dernières sauvegardes GitHub restaurées');
         ghUi(); if (GH.dirty) ghSchedule(1500);
         return res.changed;
-    }).catch(function (e) { GH.err = e.message; ghUi(); if (mode === 'manual' || mode === 'test') toast('❌ ' + e.message); return false; });
+    }).catch(function (e) { GH.err = e.message; GH.diag = e.diag || null; ghUi(); if (mode === 'manual') toast('❌ ' + e.message); return false; });
 }
 function ghSchedule(ms) { var c = ghCfg(); if (!c) return; GH.dirty = true; try { localStorage.setItem('covo_pp_gh_pending', '1'); } catch (e) {} ghUi(); clearTimeout(GH.timer); GH.timer = setTimeout(function () { ghPush(false); }, ms || 3000); }
 function ghPush(manual, retry) {
@@ -1041,7 +1116,7 @@ function ghPush(manual, retry) {
     GH.saving = true; ghUi();
     var d = new Date(), msg = 'Projets Pro — sauvegarde du ' + d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + ' (' + who() + ')';
     var go = function () {
-        var body = { message: msg, content: b64e(JSON.stringify(DOC, null, 1)), branch: c.br }; if (GH.sha) body.sha = GH.sha;
+        var body = { message: msg, content: b64e(JSON.stringify(DOC, null, 1)) }; if (!GH.empty) body.branch = c.br; if (GH.sha) body.sha = GH.sha;
         return fetch(ghApi(c), { method: 'PUT', headers: Object.assign({ 'Content-Type': 'application/json' }, ghHdr(c)), body: JSON.stringify(body) });
     };
     var first = GH.sha || retry ? Promise.resolve() : ghGet(c).then(function (g) { GH.sha = g.sha; if (g.doc) ghApply(g.doc); });
@@ -1049,14 +1124,15 @@ function ghPush(manual, retry) {
         if ((r.status === 409 || r.status === 422) && !retry) {           // fichier modifié ailleurs : on fusionne puis on renvoie
             return ghGet(c).then(function (g) { GH.sha = g.sha; if (g.doc) { ghApply(g.doc); render(); } GH.saving = false; return ghPush(manual, true); });
         }
+        if (r.status === 404) return ghRepoCheck(c).then(function () { throw new Error('Envoi refusé : le token n’a pas le droit d’écrire (Contents : Read and write)'); });
         if (!r.ok) throw new Error(ghErr(r));
         return r.json().then(function (j) {
-            GH.sha = j.content && j.content.sha; GH.dirty = false; GH.err = ''; GH.last = Date.now();
+            GH.sha = j.content && j.content.sha; GH.dirty = false; GH.err = ''; GH.diag = null; GH.empty = false; GH.last = Date.now();
             try { localStorage.removeItem('covo_pp_gh_pending'); localStorage.setItem('covo_pp_gh_last', String(GH.last)); } catch (e) {}
             if (manual) toast('🐙 Projets enregistrés sur GitHub');
             return true;
         });
-    }).catch(function (e) { GH.err = e.message; if (manual) toast('❌ GitHub : ' + e.message); return false; })
+    }).catch(function (e) { GH.err = e.message; GH.diag = e.diag || GH.diag || null; if (manual) toast('❌ GitHub : ' + e.message); return false; })
       .then(function (ok) { GH.saving = false; ghUi(); if (GH.again) { GH.again = false; ghSchedule(1000); } return ok; });
 }
 /* avant toute ouverture : écran de restauration (8 s maximum, puis on continue avec les données de l'appareil) */
