@@ -41,7 +41,7 @@ button,input,select,textarea{font-family:inherit;}
 .num{font-variant-numeric:tabular-nums;}
 /* en-tête */
 #top{position:sticky;top:0;z-index:40;background:linear-gradient(135deg,var(--h1),var(--h2) 60%,var(--h3));color:#fff;padding:calc(10px + var(--safe-t)) 16px 12px;box-shadow:0 6px 24px rgba(10,20,60,.25);}
-#top .row{display:flex;align-items:center;gap:10px;max-width:1100px;margin:0 auto;}
+#top .row{display:flex;align-items:center;gap:10px;margin:0 auto;}
 #top .logo{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0;}
 #top h1{margin:0;font-size:1.12rem;font-weight:900;letter-spacing:-.2px;}
 #top .st{font-size:.72rem;opacity:.85;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -53,7 +53,17 @@ button,input,select,textarea{font-family:inherit;}
 #drive.wait{background:rgba(250,178,25,.3);}
 @media (max-width:640px){.ib .tx{display:none;}}
 /* contenu */
-main{max-width:1100px;margin:0 auto;padding:14px 14px calc(90px + var(--safe-b));}
+main{margin:0 auto;padding:16px clamp(12px,2vw,28px) calc(90px + var(--safe-b));}
+/* ordinateur : toute la largeur, liste à gauche et tableau de bord à droite */
+.lay{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;align-items:start;}
+.colR .sect:first-child{margin-top:0;}
+@media (min-width:1200px){.lay{grid-template-columns:minmax(0,1fr) clamp(360px,30vw,480px);}.colR{position:sticky;top:84px;max-height:calc(100vh - 100px);overflow-y:auto;scrollbar-width:thin;padding-bottom:6px;}.colR .hb{grid-template-columns:minmax(70px,150px) minmax(0,1fr) 112px;}}
+@media (min-width:1600px){.kpis{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;}.kpi b{font-size:1.5rem;}}
+.stl{display:flex;flex-direction:column;gap:4px;}
+.stl button{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:8px;align-items:center;border:none;background:transparent;color:var(--ink);padding:7px 8px;border-radius:10px;cursor:pointer;font-weight:800;font-size:.84rem;text-align:left;}
+.stl button:hover,.stl button.on{background:var(--soft);}
+.stl button i{font-style:normal;height:6px;border-radius:3px;background:var(--sc);grid-column:2/3;}
+.stl button b{font-variant-numeric:tabular-nums;}
 .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px;}
 .kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:11px 13px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
 .kpi::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:0 3px 3px 0;background:var(--c,var(--acc));}
@@ -61,14 +71,16 @@ main{max-width:1100px;margin:0 auto;padding:14px 14px calc(90px + var(--safe-b))
 .kpi b{display:block;font-size:1.3rem;font-weight:900;margin-top:2px;}
 .kpi small{display:block;font-size:.72rem;color:var(--ink2);font-weight:600;margin-top:1px;}
 @media (max-width:760px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr));}}
+/* téléphone : recherche sur sa ligne, tous les filtres visibles en entier (sur plusieurs lignes) */
+@media (max-width:640px){.bar{flex-direction:column;align-items:stretch;}.bar .q{flex:none;width:100%;max-width:none;min-width:0;}.chips{gap:6px;}.chip{padding:7px 10px;font-size:.78rem;}}
 .bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
-.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;}
+.chips{display:flex;gap:6px;flex-wrap:wrap;flex:1;min-width:0;}
 .chips::-webkit-scrollbar{display:none;}
 .chip{flex-shrink:0;border:1px solid var(--line);background:var(--surface);color:var(--ink2);border-radius:999px;padding:7px 12px;font-size:.8rem;font-weight:800;cursor:pointer;white-space:nowrap;}
 .chip em{font-style:normal;color:var(--mute);margin-left:4px;}
 .chip.on{background:var(--ink);border-color:var(--ink);color:var(--bg);}
 .chip.on em{color:inherit;opacity:.75;}
-.q{flex:1;min-width:180px;max-width:320px;padding:9px 12px;border:1px solid var(--line);border-radius:11px;background:var(--surface);color:var(--ink);font-size:.88rem;}
+.q{flex:0 1 320px;min-width:180px;padding:9px 12px;border:1px solid var(--line);border-radius:11px;background:var(--surface);color:var(--ink);font-size:.88rem;}
 .btn{border:none;border-radius:11px;padding:10px 15px;font-weight:800;font-size:.86rem;cursor:pointer;display:inline-flex;align-items:center;gap:7px;justify-content:center;}
 .btn.pri{background:var(--acc);color:#fff;box-shadow:0 4px 12px rgba(42,120,214,.3);}
 .btn.sec{background:var(--soft);color:var(--ink);border:1px solid var(--line);}
@@ -143,7 +155,7 @@ main{max-width:1100px;margin:0 auto;padding:14px 14px calc(90px + var(--safe-b))
 .hb .t i.s{background:var(--acc);top:5px;bottom:5px;}
 .hb .t i.s.over{background:var(--crit);}
 .hb .v{font-weight:800;white-space:nowrap;color:var(--ink2);text-align:right;}
-.lg{display:flex;gap:14px;font-size:.72rem;font-weight:700;color:var(--ink2);margin-top:8px;}
+.lg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.72rem;font-weight:700;color:var(--ink2);margin-top:8px;}
 .lg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;}
 /* feuille de détail */
 .ov{position:fixed;inset:0;z-index:60;background:rgba(2,6,23,.5);backdrop-filter:blur(3px);display:none;}
@@ -279,17 +291,17 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
 #zoom img{max-width:100%;max-height:calc(100vh - 90px);border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
 #zoom a{color:#fff;font-weight:800;font-size:.86rem;}
 /* bandeau d'installation */
-#ibar{display:none;align-items:center;gap:10px;flex-wrap:wrap;max-width:1100px;margin:12px auto 0;padding:10px 12px;border-radius:14px;background:var(--accb);border:1px solid color-mix(in srgb,var(--acc) 35%,transparent);}
+#ibar{display:none;align-items:center;gap:10px;flex-wrap:wrap;margin:12px clamp(12px,2vw,28px) 0;padding:10px 12px;border-radius:14px;background:var(--accb);border:1px solid color-mix(in srgb,var(--acc) 35%,transparent);}
 #ibar.on{display:flex;}
 #ibar .ic{font-size:1.4rem;}
 #ibar .tx{flex:1;min-width:200px;font-size:.8rem;font-weight:600;color:var(--ink2);}
 #ibar .tx b{display:block;font-size:.9rem;color:var(--ink);}
-@media (max-width:1128px){#ibar{margin:12px 14px 0;}}
+
 /* bandeau de restauration */
-#rbar{display:none;align-items:center;gap:10px;flex-wrap:wrap;max-width:1100px;margin:12px auto 0;padding:10px 12px;border-radius:14px;background:var(--warnb);border:1px solid color-mix(in srgb,var(--warn) 40%,transparent);font-size:.84rem;font-weight:700;color:var(--ink);}
+#rbar{display:none;align-items:center;gap:10px;flex-wrap:wrap;margin:12px clamp(12px,2vw,28px) 0;padding:10px 12px;border-radius:14px;background:var(--warnb);border:1px solid color-mix(in srgb,var(--warn) 40%,transparent);font-size:.84rem;font-weight:700;color:var(--ink);}
 #rbar.on{display:flex;}
 #rbar span{flex:1;min-width:200px;}
-@media (max-width:1128px){#rbar{margin:12px 14px 0;}}
+
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
 </style>
 </head>
@@ -519,10 +531,14 @@ function render() {
         + '<div class="kpi" style="--c:#6250d6"><span>Prix des projets</span><b class="num">' + eur0(bud) + '</b><small>dépensé ' + eur0(sp) + (over ? ' · ⚠️ ' + over + ' hors budget' : '') + '</small></div>'
         + '<div class="kpi" style="--c:' + (di < 0 ? 'var(--crit)' : 'var(--good)') + '"><span>Montant disponible</span><b class="num"' + (di < 0 ? ' style="color:var(--crit)"' : ' style="color:var(--good)"') + '>' + eur0(di) + '</b><small>financé ' + eur0(fu) + ' − dépensé ' + eur0(sp) + '</small></div>'
         + '<div class="kpi" style="--c:var(--warn)"><span>Reste à financer</span><b class="num">' + eur0(af) + '</b><small>' + (bud ? Math.min(100, Math.round(fu / bud * 100)) + ' % financé' : '—') + '</small></div></div>';
+    h += '<div class="lay"><div class="colL">';
     h += '<div class="bar"><input class="q" id="q" type="search" placeholder="🔎 Rechercher un projet…" value="' + esc(F.q) + '"><div class="chips">' + CH.map(function (c) { return '<button class="chip' + (F.f === c[0] ? ' on' : '') + '" data-f="' + c[0] + '">' + c[1] + '<em>' + cnt(c[0]) + '</em></button>'; }).join('') + '</div></div>';
     if (F.f === 'all') h += '<p class="hint">' + (canDrag ? '↕️ Glissez la poignée ⠿ ou utilisez les flèches pour changer l’ordre : le n° 1 est le projet prioritaire.' : 'Effacez la recherche pour déplacer les projets.') + '</p>';
     if (!list.length) h += '<div class="empty"><b>' + (all.length ? '🔍' : '📁') + '</b>' + (all.length ? 'Aucun projet dans cette liste' : 'Aucun projet pour l’instant — cliquez sur « ➕ Nouveau projet »') + '</div>';
     else h += '<div class="list" id="list">' + list.map(function (p) { return card(p, canDrag); }).join('') + '</div>';
+    h += '</div><aside class="colR">';
+    // répartition par statut (cliquable)
+    h += '<div class="sect">📊 Projets par statut</div><div class="card"><div class="stl">' + Object.keys(ST).map(function (k) { var n = all.filter(function (p) { return p.statut === k; }).length, f = k === 'termine' || k === 'refuse' ? 'arch' : k; return '<button class="st-' + k + (F.f === f ? ' on' : '') + '" data-f="' + f + '"><span>' + ST[k][0] + '</span><span>' + ST[k][1] + '</span><b>' + n + '</b><i style="width:' + (all.length ? Math.max(n ? 4 : 0, n / all.length * 100) : 0).toFixed(0) + '%"></i></button>'; }).join('') + '</div></div>';
     // budget prévu / dépensé
     var B = A.filter(function (p) { return +p.budget > 0 || funded(p) > 0 || spent(p) > 0; }).slice(0, 10);
     if (B.length && F.f !== 'arch') {
@@ -531,6 +547,7 @@ function render() {
             + B.map(function (p) { var b = +p.budget || 0, f = Math.max(0, funded(p)), s = spent(p); return '<div class="hb" title="' + esc(p.nom) + ' : prix ' + eur(b) + ' · financé ' + eur(f) + ' · dépensé ' + eur(s) + ' · disponible ' + eur(dispo(p)) + '"><span class="n">' + rankOf(p) + '. ' + esc(p.nom) + '</span><span class="t"><i class="b" style="width:' + (b / mx * 100).toFixed(1) + '%"></i><i class="f" style="width:' + (f / mx * 100).toFixed(1) + '%"></i><i class="s' + (b && s > b ? ' over' : '') + '" style="width:' + (s / mx * 100).toFixed(1) + '%"></i></span><span class="v num">' + eur0(f) + ' / ' + eur0(b) + '</span></div>'; }).join('')
             + '<div class="lg"><span><i style="background:color-mix(in srgb,var(--acc) 22%,transparent)"></i>Prix du projet</span><span><i style="background:var(--good)"></i>Financé</span><span><i style="background:var(--acc)"></i>Dépensé</span><span><i style="background:var(--crit)"></i>Hors budget</span></div></div>';
     }
+    h += '</aside></div>';
     $('main').innerHTML = h;
     $('fab').style.display = innerWidth <= 640 ? '' : 'none';
 }
