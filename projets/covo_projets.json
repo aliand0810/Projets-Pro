@@ -50,7 +50,9 @@
   {
    "id": "PJ-MVNUA7ECE51",
    "nom": "Climatisation 2CV",
-   "images": [],
+   "images": [
+    "https://elec-destock.fr/70203-large_default/ensemble-climatisation-bi-split-42kw-avec-2-unites-25kw-et-groupe-exterieur-14000btu-r32-230v-climadesign.jpg"
+   ],
    "apports": [],
    "budget": 2000,
    "cat": "Travaux",
@@ -62,11 +64,16 @@
    "votants": [],
    "avancement": 0,
    "createdAt": 1792933449204,
-   "updatedAt": 1792933449204,
+   "updatedAt": 1792964895676,
    "hist": [
     {
      "t": 1792933449204,
      "txt": "Projet créé · prix 2 000,00 €",
+     "by": "Admin-Développeur"
+    },
+    {
+     "t": 1792964895676,
+     "txt": "🖼️ Image jointe",
      "by": "Admin-Développeur"
     }
    ]
@@ -87,6 +94,6 @@
    }
   ]
  },
- "updatedAt": 1792964803930,
+ "updatedAt": 1792964895676,
  "orderAt": 1792933555356
 }
