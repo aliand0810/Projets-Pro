@@ -950,8 +950,11 @@ function ghDiagHtml(c) {
 }
 function setAct(a) {
     if (a === 'ghsave') {
-        var c = { tok: $('gh-tok').value.replace(/^\s*(bearer|token)\s+/i, '').replace(/\s+/g, ''), own: $('gh-own').value.trim(), rep: $('gh-rep').value.trim(), br: $('gh-br').value.trim() || 'main', path: ($('gh-path').value.trim() || 'projets/covo_projets.json').replace(/^\/+/, '') };
+        var raw = $('gh-tok').value, c = { tok: ghTok(raw), own: $('gh-own').value.trim(), rep: $('gh-rep').value.trim(), br: $('gh-br').value.trim() || 'main', path: ($('gh-path').value.trim() || 'projets/covo_projets.json').replace(/^\/+/, '') };
+        c.own = c.own.replace(/[^A-Za-z0-9_.-]/g, ''); c.rep = c.rep.replace(/[^A-Za-z0-9_.-]/g, ''); c.br = c.br.replace(/[^\x21-\x7e]/g, '') || 'main'; c.path = c.path.replace(/[^\x20-\x7e]/g, '');
         if (!c.tok || !c.own || !c.rep) { $('gh-st').className = 'ghst ko'; $('gh-st').textContent = '⚠️ Token, propriétaire et dépôt sont obligatoires'; return; }
+        if (!/^(ghp_|gho_|ghu_|ghs_|github_pat_)[A-Za-z0-9_]{20,}$/.test(c.tok) && !/^[0-9a-f]{40}$/.test(c.tok)) { $('gh-st').className = 'ghst ko'; $('gh-st').textContent = '⚠️ Ce token ne ressemble pas à un token GitHub (il doit commencer par github_pat_ ou ghp_). Recopiez-le en entier depuis GitHub avec le bouton 📋.'; return; }
+        $('gh-tok').value = c.tok;
         if (!/\.json$/i.test(c.path)) c.path += '.json';
         try { localStorage.setItem(GHK, JSON.stringify(c)); } catch (e) {}
         GH.sha = null; GH.err = ''; GH.diag = null; GH.empty = false; $('gh-st').className = 'ghst'; $('gh-st').textContent = '⏳ Test de la connexion…';
@@ -1010,7 +1013,10 @@ function merge(a, b) {
    à chaque modification, et récupérés automatiquement avant toute ouverture. */
 var GHK = 'covo_pp_gh';
 var GH = { sha: null, dirty: ls('covo_pp_gh_pending', '') === '1', saving: false, timer: 0, last: +ls('covo_pp_gh_last', '0') || 0, pulled: 0, restored: +ls('covo_pp_gh_restored', '0') || 0, err: '' };
-function ghCfg() { var c = lsJson(GHK, null); return c && c.tok && c.own && c.rep ? { tok: c.tok, own: c.own, rep: c.rep, br: c.br || 'main', path: c.path || 'projets/covo_projets.json' } : null; }
+/* un token GitHub ne contient que A-Z a-z 0-9 _ : on retire tout le reste (espaces, caractères invisibles, « … », guillemets copiés…) */
+function ghTok(t) { return String(t || '').replace(/^\s*(bearer|token)\s+/i, '').replace(/[^A-Za-z0-9_]/g, ''); }
+function ghMsg(e) { var m = String(e && e.message || e); return /ISO-8859-1|code point|headers/i.test(m) ? 'Le token contient un caractère invalide : recopiez-le depuis GitHub (bouton 📋)' : /Failed to fetch|NetworkError|Load failed/i.test(m) ? 'GitHub injoignable (connexion internet ?)' : m; }
+function ghCfg() { var c = lsJson(GHK, null); return c && ghTok(c.tok) && c.own && c.rep ? { tok: ghTok(c.tok), own: c.own, rep: c.rep, br: c.br || 'main', path: c.path || 'projets/covo_projets.json' } : null; }
 function ghApi(c) { return 'https://api.github.com/repos/' + encodeURIComponent(c.own) + '/' + encodeURIComponent(c.rep) + '/contents/' + c.path.split('/').map(encodeURIComponent).join('/'); }
 function ghHdr(c, raw) { return { Authorization: 'Bearer ' + c.tok, Accept: raw ? 'application/vnd.github.raw+json' : 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }; }
 function b64e(t) { return btoa(unescape(encodeURIComponent(t))); }
@@ -1107,7 +1113,7 @@ function ghPull(mode) {
         else if (mode === 'auto' && res.changed) toast('⤵️ Dernières sauvegardes GitHub restaurées');
         ghUi(); if (GH.dirty) ghSchedule(1500);
         return res.changed;
-    }).catch(function (e) { GH.err = e.message; GH.diag = e.diag || null; ghUi(); if (mode === 'manual') toast('❌ ' + e.message); return false; });
+    }).catch(function (e) { GH.err = ghMsg(e); GH.diag = e.diag || null; ghUi(); if (mode === 'manual') toast('❌ ' + GH.err); return false; });
 }
 function ghSchedule(ms) { var c = ghCfg(); if (!c) return; GH.dirty = true; try { localStorage.setItem('covo_pp_gh_pending', '1'); } catch (e) {} ghUi(); clearTimeout(GH.timer); GH.timer = setTimeout(function () { ghPush(false); }, ms || 3000); }
 function ghPush(manual, retry) {
@@ -1132,7 +1138,7 @@ function ghPush(manual, retry) {
             if (manual) toast('🐙 Projets enregistrés sur GitHub');
             return true;
         });
-    }).catch(function (e) { GH.err = e.message; GH.diag = e.diag || GH.diag || null; if (manual) toast('❌ GitHub : ' + e.message); return false; })
+    }).catch(function (e) { GH.err = ghMsg(e); GH.diag = e.diag || GH.diag || null; if (manual) toast('❌ GitHub : ' + GH.err); return false; })
       .then(function (ok) { GH.saving = false; ghUi(); if (GH.again) { GH.again = false; ghSchedule(1000); } return ok; });
 }
 /* avant toute ouverture : écran de restauration (8 s maximum, puis on continue avec les données de l'appareil) */
