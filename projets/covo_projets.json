@@ -72,6 +72,18 @@
  "deleted": {
   "PJ-MVNROZVN3OQ": 1792929126476
  },
- "updatedAt": 1792933579398,
+ "capital": {
+  "mv": [
+   {
+    "id": "C-MVO9U2FE4MN",
+    "t": 1792959570122,
+    "date": "2026-10-25",
+    "mt": 690,
+    "lib": "Apport au capital",
+    "by": "Admin-Développeur"
+   }
+  ]
+ },
+ "updatedAt": 1792959570122,
  "orderAt": 1792933555356
 }
