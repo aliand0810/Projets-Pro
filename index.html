@@ -290,6 +290,26 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
 #zoom.on{display:flex;}
 #zoom img{max-width:100%;max-height:calc(100vh - 90px);border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
 #zoom a{color:#fff;font-weight:800;font-size:.86rem;}
+/* réglages + QR code */
+.sg{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;}
+.sg h4{margin:0 0 2px;font-size:.95rem;font-weight:900;}
+.sg .sub{font-size:.76rem;color:var(--mute);font-weight:600;margin-bottom:10px;}
+.qrw{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center;}
+.qrbox{width:196px;height:196px;padding:10px;background:#fff;border-radius:14px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);}
+.qrbox img,.qrbox canvas{width:176px!important;height:176px!important;image-rendering:pixelated;}
+.qrbox .ld{font-size:.76rem;color:#64748b;font-weight:700;text-align:center;}
+.qrs{display:flex;flex-direction:column;gap:8px;min-width:0;}
+.qrs ol{margin:0;padding-left:18px;font-size:.82rem;font-weight:600;color:var(--ink2);line-height:1.5;}
+.qrl{font-size:.74rem;font-weight:800;color:var(--acc);word-break:break-all;background:var(--soft);border-radius:9px;padding:7px 9px;}
+.qrb{display:flex;gap:6px;flex-wrap:wrap;}
+.qrb .btn{padding:8px 11px;font-size:.78rem;}
+.qrt{display:flex;gap:4px;padding:3px;border-radius:11px;background:var(--soft2);width:max-content;margin-bottom:12px;}
+.qrt button{border:none;background:transparent;color:var(--ink2);border-radius:9px;padding:7px 12px;font-weight:900;font-size:.78rem;cursor:pointer;}
+.qrt button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow);}
+.kv2{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 12px;font-size:.82rem;}
+.kv2 span{color:var(--mute);font-weight:700;}.kv2 b{font-weight:800;word-break:break-all;}
+@media (max-width:560px){.qrw{grid-template-columns:1fr;justify-items:center;text-align:left;}.qrs{width:100%;}}
+@media print{body>*:not(#mset){display:none!important;}#mset{position:static!important;background:none!important;display:block!important;}#mset .mh,#mset .mf,#mset .qrb,#mset .qrt,#mset .sg:not(.qrsec){display:none!important;}#mset .bx{box-shadow:none!important;max-height:none!important;}}
 /* bandeau d'installation */
 #ibar{display:none;align-items:center;gap:10px;flex-wrap:wrap;margin:12px clamp(12px,2vw,28px) 0;padding:10px 12px;border-radius:14px;background:var(--accb);border:1px solid color-mix(in srgb,var(--acc) 35%,transparent);}
 #ibar.on{display:flex;}
@@ -324,6 +344,8 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
 <button class="fab" id="fab" style="display:none">➕ Projet</button>
 
 <div class="menu" id="menu">
+  <button data-m="settings">⚙️ Réglages · QR code de l’application</button>
+  <hr>
   <button data-m="save">☁️ Sauvegarder maintenant sur Drive</button>
   <button data-m="restore">⤵️ Récupérer depuis Drive</button>
   <hr>
@@ -380,6 +402,12 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
   <div class="mf"><button class="btn sec" data-qclose="1">Annuler</button><button class="btn ok" id="q-ok">💵 Ajouter le montant</button></div>
 </div></div>
 <datalist id="dl-orig"><option value="Épargne"><option value="Apport personnel"><option value="Apport associé"><option value="Recette du magasin"><option value="Subvention"><option value="Prêt"></datalist>
+
+<div class="modal" id="mset"><div class="bx">
+  <div class="mh"><h3>⚙️ Réglages</h3><button class="x2" data-sclose="1">✕</button></div>
+  <div class="mb" id="set-body"></div>
+  <div class="mf"><button class="btn sec" data-sclose="1">Fermer</button></div>
+</div></div>
 
 <div class="modal" id="minst"><div class="bx">
   <div class="mh"><h3>📲 Installer Projets Pro</h3><button class="x2" data-iclose="1">✕</button></div>
@@ -720,6 +748,10 @@ function bind() {
         var am = t.closest('[data-addm]'); if (am) { openAmount(am.closest('.pj').getAttribute('data-id')); return; }
         if (t.id === 'q-ok') { var qp = byId(QA), qs = document.querySelector('#q-sg .on') && document.querySelector('#q-sg .on').getAttribute('data-sg') === '-1' ? -1 : 1; if (qp && addAmount(qp, qs * (+String($('q-mt').value).replace(',', '.') || 0), $('q-lib').value.trim(), $('q-date').value, true)) $('mamt').classList.remove('on'); return; }
         var qsg = t.closest('#q-sg [data-sg]'); if (qsg) { document.querySelectorAll('#q-sg button').forEach(function (x) { x.classList.toggle('on', x === qsg); }); $('q-ok').textContent = qsg.getAttribute('data-sg') === '-1' ? '➖ Retirer le montant' : '💵 Ajouter le montant'; $('q-ok').className = 'btn ' + (qsg.getAttribute('data-sg') === '-1' ? 'dan' : 'ok'); return; }
+        if (t.closest('[data-sclose]') || t.id === 'mset') { $('mset').classList.remove('on'); return; }
+        var qt = t.closest('[data-qt]'); if (qt) { QRT = qt.getAttribute('data-qt'); return openSettings(); }
+        var qa = t.closest('[data-qa]'); if (qa) return setAct(qa.getAttribute('data-qa'));
+        if (t.id === 'qr-lic') { QRLIC = t.checked; return drawQR(); }
         if (t.closest('[data-iclose]') || t.id === 'minst') { $('minst').classList.remove('on'); return; }
         var qc = t.closest('#q-ch [data-q]'); if (qc) { var qi = $('q-mt'); qi.value = Math.round(((+String(qi.value).replace(',', '.') || 0) + (+qc.getAttribute('data-q'))) * 100) / 100; qi.focus(); return; }
         if (t.closest('[data-qclose]') || t.id === 'mamt') { $('mamt').classList.remove('on'); return; }
@@ -758,6 +790,7 @@ function bind() {
         if (t.id === 'v-reset') { if (confirm('Effacer tous les votes de ce projet et recommencer ?')) { (p2.votants || []).forEach(function (y) { y.vote = null; y.at = null; }); if (p2.statut === 'valide' || p2.statut === 'refuse') p2.statut = 'vote'; hist(p2, '↺ Vote recommencé'); touch(p2); save(); sheetRender(); } return; }
     });
     document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && $('mset').classList.contains('on')) { $('mset').classList.remove('on'); return; }
         if (e.key === 'Escape') { if ($('mamt').classList.contains('on')) $('mamt').classList.remove('on'); else if ($('mnew').classList.contains('on')) $('mnew').classList.remove('on'); else if (CUR) closeSheet(); }
         if (e.key === 'Enter' && e.target.id === 'v-nom') { e.preventDefault(); var p = byId(CUR); if (p) addVoters(p); }
         if (e.key === 'Enter' && (e.target.id === 'd-lib' || e.target.id === 'd-mt')) { e.preventDefault(); $('d-add').click(); }
@@ -819,7 +852,49 @@ function addVoters(p) {
     hist(p, '👥 Votant' + (added.length > 1 ? 's' : '') + ' ajouté' + (added.length > 1 ? 's' : '') + ' : ' + added.join(', ')); applyVote(p); touch(p); save(); sheetRender();
     setTimeout(function () { var i = $('v-nom'); if (i) i.focus(); }, 30);
 }
+/* ───────────── Réglages : QR code pour récupérer l'application sur un téléphone ───────────── */
+var APP_URL = 'https://aliand0810.github.io/Projets-Pro/';
+var QRT = 'install';
+function qrLib() { return new Promise(function (res, rej) { if (window.QRCode) return res(); var s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'; s.onload = function () { res(); }; s.onerror = function () { rej(); }; document.head.appendChild(s); }); }
+var QRLIC = true;
+/* licence jointe au lien (#lic=…, lue par licence_check.js) : le téléphone est activé automatiquement */
+function licHash() { var l = licence(); if (!QRLIC || !l) return ''; try { return '#lic=' + btoa(unescape(encodeURIComponent(l.mail + '|' + l.key))).replace(/=+$/, ''); } catch (e) { return ''; } }
+function qrTarget() { return (QRT === 'covo' ? 'https://aliand0810.github.io/Covo-pro/' : APP_URL + '?installer=1') + licHash(); }
+function drawQR() {
+    var box = $('qr'), url = qrTarget(); if (!box) return;
+    box.innerHTML = '<div class="ld">Génération du QR code…</div>';
+    $('qr-url').textContent = url.replace(/#lic=.*/, ' + licence');
+    qrLib().then(function () { box.innerHTML = ''; new QRCode(box, { text: url, width: 352, height: 352, colorDark: '#0f172a', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M }); var im = box.querySelector('img'); if (im) im.alt = 'QR code : ' + url; })
+        .catch(function () { box.innerHTML = '<div class="ld">QR code indisponible hors connexion.<br>Utilisez le lien ci-contre.</div>'; });
+}
+function openSettings() {
+    var l = licence(), sx = session(), cid = ls('gdrive_client_id', '');
+    $('set-body').innerHTML = '<div class="sg qrsec"><h4>📲 Récupérer l’application sur un téléphone</h4><div class="sub">Scannez ce QR code avec l’appareil photo du téléphone : Projets Pro s’ouvre et propose de s’installer.</div>'
+        + '<div class="qrt" id="qr-t"><button data-qt="install"' + (QRT === 'install' ? ' class="on"' : '') + '>📁 Projets Pro</button><button data-qt="covo"' + (QRT === 'covo' ? ' class="on"' : '') + '>🛒 COVO Pro</button></div>'
+        + '<div class="qrw"><div class="qrbox" id="qr"></div><div class="qrs"><ol><li>Ouvrez l’<b>appareil photo</b> du téléphone et visez le QR code.</li><li>Touchez le lien qui s’affiche.</li><li>' + (QRT === 'covo' ? 'Connectez-vous à COVO Pro.' : 'Connectez-vous, puis touchez <b>« Installer »</b> (iPhone : Partager → Sur l’écran d’accueil).') + '</li></ol>'
+        + '<div class="qrl" id="qr-url"></div><div class="qrb"><button class="btn sec" data-qa="copy">📋 Copier le lien</button>' + (navigator.share ? '<button class="btn sec" data-qa="share">📤 Partager</button>' : '') + '<button class="btn sec" data-qa="print">🖨️ Imprimer</button></div></div></div>'
+        + (l ? '<label class="rem" style="margin:12px 0 0"><input type="checkbox" id="qr-lic"' + (QRLIC ? ' checked' : '') + '> Activer automatiquement ma licence COVO Pro sur le téléphone</label><div class="hint" style="margin:4px 0 0">🔒 Le QR code contient alors votre clé de licence : ne le montrez qu’à vos propres appareils (la limite d’appareils de la licence s’applique).</div>' : '')
+        + '<div class="hint" style="margin:10px 0 0">Sur le téléphone : connectez-vous avec votre code administrateur (ou le mot de passe maître si COVO Pro n’y a pas encore été ouvert), puis connectez Google Drive pour retrouver tous vos projets.</div></div>'
+        + '<div class="sg"><h4>📲 Cet appareil</h4><div class="sub">' + (installed() ? '✅ Projets Pro est installé sur cet appareil' + (ls('covo_pwa_proto_' + PWA, '') === '1' ? ' · ouverture directe depuis COVO Pro active' : '') : 'Projets Pro n’est pas encore installé sur cet appareil') + '</div>' + (installed() ? '' : '<button class="btn pri" data-qa="install">📲 Installer sur cet appareil</button>') + '</div>'
+        + '<div class="sg"><h4>☁️ Google Drive</h4><div class="kv2"><span>État</span><b>' + (GD.connected ? '✅ Connecté' : 'Non connecté') + '</b><span>Dernière sauvegarde</span><b>' + (GD.last ? fmtDT(GD.last) : 'jamais') + '</b><span>Dernière restauration</span><b>' + (GD.restored || +ls('covo_projets_restored', '0') ? fmtDT(GD.restored || +ls('covo_projets_restored', '0')) : 'jamais') + '</b><span>Client ID</span><b>' + (cid ? esc(cid.slice(0, 18)) + '…' : 'non configuré (réglé dans COVO Pro)') + '</b></div>'
+        + '<div class="qrb" style="margin-top:10px">' + (GD.connected ? '<button class="btn sec" data-qa="save">☁️ Sauvegarder maintenant</button><button class="btn sec" data-qa="restore">⤵️ Récupérer</button>' : '<button class="btn pri" data-qa="connect">☁️ Connecter Google Drive</button>') + '</div></div>'
+        + '<div class="sg"><h4>🔑 Compte</h4><div class="kv2"><span>Connecté</span><b>' + esc(sx ? sx.name : '—') + '</b><span>Licence</span><b>' + (l ? 'COVO Pro · ' + esc(l.mail) : '—') + '</b><span>Projets</span><b>' + DOC.projets.length + '</b></div>'
+        + '<div class="qrb" style="margin-top:10px"><button class="btn sec" data-qa="theme">🌓 Thème clair / sombre</button><button class="btn sec" data-qa="export">💾 Exporter</button><button class="btn dan" data-qa="logout">🚪 Se déconnecter</button></div></div>';
+    $('mset').classList.add('on'); drawQR();
+}
+function setAct(a) {
+    var url = qrTarget();
+    if (a === 'copy') { (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () { toast('📋 Lien copié'); }, function () { prompt('Copiez le lien :', url); }); return; }
+    if (a === 'share') { navigator.share({ title: QRT === 'covo' ? 'COVO Pro' : 'Projets Pro', text: QRT === 'covo' ? 'Ouvrir COVO Pro' : 'Installer Projets Pro sur ce téléphone', url: url }).catch(function () {}); return; }
+    if (a === 'print') { window.print(); return; }
+    if (a === 'install') { $('mset').classList.remove('on'); return install(); }
+    if (a === 'connect') { $('mset').classList.remove('on'); return driveConnect(false, true); }
+    if (a === 'save') { driveSaveNow(true); return setTimeout(openSettings, 1500); }
+    if (a === 'restore') { drivePull(true).then(openSettings); return; }
+    if (a === 'theme' || a === 'export' || a === 'logout') return menuAct(a);
+}
 function menuAct(a) {
+    if (a === 'settings') return openSettings();
     if (a === 'save') return GD.connected ? driveSaveNow(true) : driveConnect(false);
     if (a === 'restore') return GD.connected ? drivePull(true) : (toast('Connexion à Google Drive…'), driveConnect(false, true));
     if (a === 'export') { var b = new Blob([JSON.stringify(DOC, null, 2)], { type: 'application/json' }), u = URL.createObjectURL(b), l = document.createElement('a'); l.href = u; l.download = 'projets_pro_' + ymd() + '.json'; document.body.appendChild(l); l.click(); setTimeout(function () { URL.revokeObjectURL(u); l.remove(); }, 500); return toast('💾 Fichier exporté'); }
@@ -997,7 +1072,7 @@ function gate() {
     if (isAdm(cu) && licence()) { alt.style.display = ''; alt.textContent = '⚡ Continuer avec ma session COVO Pro (' + (cu.username || cu.name || 'admin') + ')'; } else alt.style.display = 'none';
     $('gate').classList.add('on'); return false;
 }
-function onLogged() { $('gate').classList.remove('on'); render(); driveBoot(); instBtn(); }
+function onLogged() { $('gate').classList.remove('on'); render(); driveBoot(); instBtn(); if (window._ppFromQR && !installed()) { window._ppFromQR = false; setTimeout(install, 900); } }
 function loginUi() {
     $('g-eye').onclick = function () { var i = $('g-code'); i.type = i.type === 'password' ? 'text' : 'password'; i.focus(); };
     $('g-form').addEventListener('submit', function (e) {
@@ -1060,6 +1135,7 @@ function install() {
     try { var th = localStorage.getItem('covo_pp_theme'); if (th) document.documentElement.setAttribute('data-theme', th); } catch (e) {}
     if (standalone()) lsSet('covo_pwa_installed_' + PWA, '1');
     // lancée depuis COVO Pro par le lien web+covoprojets: → l'ouverture directe fonctionne
+    try { if (/[?&]installer=1/.test(location.search)) { window._ppFromQR = true; history.replaceState(null, '', location.pathname); } } catch (e) {}
     try { if (/[?&]ouvrir=/.test(location.search)) { lsSet('covo_pwa_proto_' + PWA, '1'); lsSet('covo_pwa_installed_' + PWA, '1'); history.replaceState(null, '', location.pathname); } } catch (e) {}
     try { if ('launchQueue' in window) window.launchQueue.setConsumer(function (p) { if (p && p.targetURL && /[?&]ouvrir=/.test(p.targetURL)) { lsSet('covo_pwa_proto_' + PWA, '1'); lsSet('covo_pwa_installed_' + PWA, '1'); } }); } catch (e) {}
     window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); window._ppInstall = installed() ? null : e; instBtn(); });
