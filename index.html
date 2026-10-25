@@ -242,6 +242,15 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
 #gate p{margin:4px 0 16px;text-align:center;font-size:.84rem;color:var(--mute);font-weight:600;}
 .lic{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:11px;font-size:.78rem;font-weight:800;margin-bottom:12px;}
 .lic.ok{background:var(--goodb);color:var(--good);}.lic.ko{background:var(--warnb);color:var(--warn);}
+.lic small{display:block;font-weight:700;opacity:.8;font-size:.7rem;}
+.g-new{display:none;margin:-4px 0 12px;padding:10px 12px;border-radius:11px;background:rgba(42,120,214,.08);border:1px solid rgba(42,120,214,.25);font-size:.78rem;font-weight:700;color:var(--ink2);line-height:1.45;}
+.g-new.on{display:block;}
+#g-off:empty{display:none;}
+#g-off{margin:0 0 12px;padding:14px;border-radius:14px;background:var(--warnb);color:var(--ink);font-size:.82rem;font-weight:700;line-height:1.45;text-align:center;}
+#g-off b{display:block;font-size:.95rem;margin-bottom:4px;}
+#g-off .btn{margin-top:8px;}
+.g-sw{display:block;width:100%;margin-top:10px;background:none;border:0;color:var(--mute);font:700 .76rem inherit;font-family:inherit;text-decoration:underline;cursor:pointer;}
+.mode-b{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;font-size:.7rem;font-weight:900;background:rgba(42,120,214,.12);color:#2a78d6;}
 .pw{position:relative;}
 .pw input{width:100%;padding:13px 46px 13px 14px;border:1.5px solid var(--line);border-radius:13px;background:var(--soft);color:var(--ink);font-size:1.05rem;letter-spacing:1px;}
 .g-hint{font-size:.72rem;color:var(--mute);font-weight:600;margin-top:6px;}
@@ -348,7 +357,31 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
 </style>
 </head>
 <body>
-<script src="https://aliand0810.github.io/licences/licence_check.js" data-produit="COVO Pro"></script>
+<script>
+/* Licence : Projets Pro fonctionne en SATELLITE de COVO Pro (licence COVO Pro) ou en INDÉPENDANT (licence Projets Pro) */
+(function () {
+    function g(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+    function has(k) { try { var o = JSON.parse(g(k) || 'null'); return !!(o && o.mail && o.key); } catch (e) { return false; } }
+    var h = location.hash, m = g('covo_pp_licmode'), mh = h.match(/[#&]licp=(solo|covo)/);
+    if (mh) { m = mh[1]; try { localStorage.setItem('covo_pp_licmode', m); } catch (e) {} var nh = h.replace(/[#&]licp=(solo|covo)/, '').replace(/^&/, '#'); history.replaceState(null, '', location.pathname + location.search + (nh === '#' ? '' : nh)); h = location.hash; }
+    if (m !== 'solo' && m !== 'covo') m = has('licOK_Projets Pro') ? 'solo' : (has('licOK_COVO Pro') || /[#&]lic=/.test(h) || /[?&]ouvrir=/.test(location.search) || g('covo_users') || g('covo_products')) ? 'covo' : 'solo';
+    window.PP_LICMODE = m; window.PP_PRODUIT = m === 'solo' ? 'Projets Pro' : 'COVO Pro';
+    document.write('<script src="https://aliand0810.github.io/licences/licence_check.js" data-produit="' + window.PP_PRODUIT + '"><\/script>');
+    /* bouton pour changer de type de licence, posé sur la fenêtre de licence */
+    function pill() {
+        var ov = document.getElementById('lic-overlay'), b = document.getElementById('pp-licsw');
+        if (!ov) { if (b) b.remove(); return; }
+        if (b) return;
+        b = document.createElement('button'); b.id = 'pp-licsw'; b.type = 'button';
+        b.textContent = m === 'solo' ? '🛒 J’utilise COVO Pro : licence COVO Pro' : '📁 Sans COVO Pro : licence Projets Pro';
+        b.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));z-index:2147483647;padding:10px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:#0f172a;color:#fff;font:700 13px system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.35);cursor:pointer;max-width:calc(100% - 24px)';
+        b.onclick = function () { try { localStorage.setItem('covo_pp_licmode', m === 'solo' ? 'covo' : 'solo'); } catch (e) {} location.reload(); };
+        document.body.appendChild(b);
+    }
+    window.ppLicPill = pill;
+    document.addEventListener('DOMContentLoaded', function () { pill(); try { new MutationObserver(pill).observe(document.body, { childList: true }); } catch (e) {} });
+})();
+</script>
 <header id="top">
   <div class="row">
     <div class="logo">📁</div>
@@ -378,7 +411,7 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
   <hr>
   <button data-m="theme">🌓 Thème clair / sombre</button>
   <button data-m="install" id="m-install" style="display:none">📲 Installer l’application</button>
-  <button data-m="covo">↗️ Ouvrir COVO Pro</button>
+  <button data-m="covo" id="m-covo">↗️ Ouvrir COVO Pro</button>
   <button data-m="logout">🚪 Se déconnecter</button>
   <div class="inf" id="m-inf"></div>
 </div>
@@ -447,18 +480,22 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
     <h2>Projets Pro</h2>
     <p>Suivi des projets · priorités · budget · votes</p>
     <div class="lic" id="g-lic"></div>
+    <div id="g-off"></div>
+    <div class="g-new" id="g-new"></div>
     <div class="pw"><input id="g-code" type="password" inputmode="text" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="64" placeholder="Identifiant" autocomplete="current-password"><button type="button" id="g-eye" aria-label="Afficher">👁</button></div>
-    <div class="g-hint">Lettres et chiffres acceptés (ex : Ali2026) — majuscules et minuscules sont différenciées.</div>
+    <div class="pw" id="g-pw2" style="display:none;margin-top:8px"><input id="g-code2" type="password" inputmode="text" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="64" placeholder="Confirmez l’identifiant" autocomplete="new-password"></div>
+    <div class="g-hint" id="g-hint">Lettres et chiffres acceptés (ex : Ali2026) — majuscules et minuscules sont différenciées.</div>
     <div id="g-err"></div>
     <label class="rem"><input type="checkbox" id="g-rem" checked> Rester connecté sur cet appareil</label>
-    <button class="btn pri" type="submit">Se connecter</button>
+    <button class="btn pri" type="submit" id="g-sub">Se connecter</button>
     <button class="btn sec" type="button" id="g-covo" style="display:none"></button>
+    <button type="button" class="g-sw" id="g-sw"></button>
   </form>
 </div>
 <script>
 'use strict';
 /* ════════════════════════════════════════════════════════════════════════
-   PROJETS PRO — satellite de COVO Pro
+   PROJETS PRO — satellite de COVO Pro OU application indépendante (licence Projets Pro)
    • Projets numérotés par priorité (1 = prioritaire) : glisser-déposer, flèches ou n° à saisir
      (passer le n° 2 en 1 le rend prioritaire, les autres se décalent automatiquement)
    • Budget prévu, dépenses, reste, consommation en couleur
@@ -897,8 +934,8 @@ function qrLib() { return new Promise(function (res, rej) { if (window.QRCode) r
 var QRLIC = true, QRGH = false;
 function ghHash() { var c = ghCfg(); if (!QRGH || !c) return ''; try { return 'gh=' + btoa(unescape(encodeURIComponent(JSON.stringify(c)))).replace(/=+$/, ''); } catch (e) { return ''; } }
 /* licence jointe au lien (#lic=…, lue par licence_check.js) : le téléphone est activé automatiquement */
-function licHash() { var l = licence(); if (!QRLIC || !l) return ''; try { return '#lic=' + btoa(unescape(encodeURIComponent(l.mail + '|' + l.key))).replace(/=+$/, ''); } catch (e) { return ''; } }
-function qrTarget() { if (QRT === 'covo') return 'https://aliand0810.github.io/Covo-pro/' + licHash(); var h = licHash(), g = ghHash(); return APP_URL + '?installer=1' + (h || g ? '#' + [h.replace(/^#/, ''), g].filter(Boolean).join('&') : ''); }
+function licHash(forCovo) { var l = forCovo ? (LICMODE === 'covo' ? licence() : null) : licence(); if (!QRLIC || !l) return forCovo ? '' : '#licp=' + LICMODE; try { return '#lic=' + btoa(unescape(encodeURIComponent(l.mail + '|' + l.key))).replace(/=+$/, '') + (forCovo ? '' : '&licp=' + LICMODE); } catch (e) { return ''; } }
+function qrTarget() { if (QRT === 'covo') return 'https://aliand0810.github.io/Covo-pro/' + licHash(true); var h = licHash(), g = ghHash(); return APP_URL + '?installer=1' + (h || g ? '#' + [h.replace(/^#/, ''), g].filter(Boolean).join('&') : ''); }
 function drawQR() {
     var box = $('qr'), url = qrTarget(); if (!box) return;
     box.innerHTML = '<div class="ld">Génération du QR code…</div>';
@@ -909,17 +946,20 @@ function drawQR() {
 function openSettings() {
     var l = licence(), sx = session(), cid = ls('gdrive_client_id', '');
     $('set-body').innerHTML = '<div class="sg qrsec"><h4>📲 Récupérer l’application sur un téléphone</h4><div class="sub">Scannez ce QR code avec l’appareil photo du téléphone : Projets Pro s’ouvre et propose de s’installer.</div>'
-        + '<div class="qrt" id="qr-t"><button data-qt="install"' + (QRT === 'install' ? ' class="on"' : '') + '>📁 Projets Pro</button><button data-qt="covo"' + (QRT === 'covo' ? ' class="on"' : '') + '>🛒 COVO Pro</button></div>'
+        + (LICMODE === 'covo' || hasCovo() ? '<div class="qrt" id="qr-t"><button data-qt="install"' + (QRT === 'install' ? ' class="on"' : '') + '>📁 Projets Pro</button><button data-qt="covo"' + (QRT === 'covo' ? ' class="on"' : '') + '>🛒 COVO Pro</button></div>' : '')
         + '<div class="qrw"><div class="qrbox" id="qr"></div><div class="qrs"><ol><li>Ouvrez l’<b>appareil photo</b> du téléphone et visez le QR code.</li><li>Touchez le lien qui s’affiche.</li><li>' + (QRT === 'covo' ? 'Connectez-vous à COVO Pro.' : 'Connectez-vous, puis touchez <b>« Installer »</b> (iPhone : Partager → Sur l’écran d’accueil).') + '</li></ol>'
         + '<div class="qrl" id="qr-url"></div><div class="qrb"><button class="btn sec" data-qa="copy">📋 Copier le lien</button>' + (navigator.share ? '<button class="btn sec" data-qa="share">📤 Partager</button>' : '') + '<button class="btn sec" data-qa="print">🖨️ Imprimer</button></div></div></div>'
-        + (l ? '<label class="rem" style="margin:12px 0 0"><input type="checkbox" id="qr-lic"' + (QRLIC ? ' checked' : '') + '> Activer automatiquement ma licence COVO Pro sur le téléphone</label><div class="hint" style="margin:4px 0 0">🔒 Le QR code contient alors votre clé de licence : ne le montrez qu’à vos propres appareils (la limite d’appareils de la licence s’applique).</div>' : '')
+        + (l ? '<label class="rem" style="margin:12px 0 0"><input type="checkbox" id="qr-lic"' + (QRLIC ? ' checked' : '') + '> Activer automatiquement ma licence ' + esc(LICP) + ' sur le téléphone</label><div class="hint" style="margin:4px 0 0">🔒 Le QR code contient alors votre clé de licence : ne le montrez qu’à vos propres appareils (la limite d’appareils de la licence s’applique).</div>' : '')
         + (ghCfg() && QRT === 'install' ? '<label class="rem" style="margin:8px 0 0"><input type="checkbox" id="qr-gh"' + (QRGH ? ' checked' : '') + '> Transmettre aussi la sauvegarde GitHub (token) au téléphone</label>' : '')
-        + '<div class="hint" style="margin:10px 0 0">Sur le téléphone : connectez-vous avec votre code administrateur (ou le mot de passe maître si COVO Pro n’y a pas encore été ouvert), puis connectez Google Drive pour retrouver tous vos projets.</div></div>'
+        + '<div class="hint" style="margin:10px 0 0">' + (LICMODE === 'solo' ? 'Sur le téléphone : créez ou saisissez votre identifiant Projets Pro, puis activez GitHub ou Google Drive pour retrouver tous vos projets.' : 'Sur le téléphone : connectez-vous avec votre code administrateur (ou le mot de passe maître si COVO Pro n’y a pas encore été ouvert), puis connectez Google Drive pour retrouver tous vos projets.') + '</div></div>'
         + '<div class="sg"><h4>📲 Cet appareil</h4><div class="sub">' + (installed() ? '✅ Projets Pro est installé sur cet appareil' + (ls('covo_pwa_proto_' + PWA, '') === '1' ? ' · ouverture directe depuis COVO Pro active' : '') : 'Projets Pro n’est pas encore installé sur cet appareil') + '</div>' + (installed() ? '' : '<button class="btn pri" data-qa="install">📲 Installer sur cet appareil</button>') + '</div>'
         + ghSection()
-        + '<div class="sg"><h4>☁️ Google Drive</h4><div class="kv2"><span>État</span><b>' + (GD.connected ? '✅ Connecté' : 'Non connecté') + '</b><span>Dernière sauvegarde</span><b>' + (GD.last ? fmtDT(GD.last) : 'jamais') + '</b><span>Dernière restauration</span><b>' + (GD.restored || +ls('covo_projets_restored', '0') ? fmtDT(GD.restored || +ls('covo_projets_restored', '0')) : 'jamais') + '</b><span>Client ID</span><b>' + (cid ? esc(cid.slice(0, 18)) + '…' : 'non configuré (réglé dans COVO Pro)') + '</b></div>'
+        + '<div class="sg"><h4>☁️ Google Drive</h4><div class="kv2"><span>État</span><b>' + (GD.connected ? '✅ Connecté' : 'Non connecté') + '</b><span>Dernière sauvegarde</span><b>' + (GD.last ? fmtDT(GD.last) : 'jamais') + '</b><span>Dernière restauration</span><b>' + (GD.restored || +ls('covo_projets_restored', '0') ? fmtDT(GD.restored || +ls('covo_projets_restored', '0')) : 'jamais') + '</b><span>Client ID</span><b>' + (cid ? esc(cid.slice(0, 18)) + '…' : (LICMODE === 'solo' ? 'non configuré (injecté par votre licence ou saisi à la connexion)' : 'non configuré (réglé dans COVO Pro)')) + '</b></div>'
         + '<div class="qrb" style="margin-top:10px">' + (GD.connected ? '<button class="btn sec" data-qa="save">☁️ Sauvegarder maintenant</button><button class="btn sec" data-qa="restore">⤵️ Récupérer</button>' : '<button class="btn pri" data-qa="connect">☁️ Connecter Google Drive</button>') + '</div></div>'
-        + '<div class="sg"><h4>🔑 Compte</h4><div class="kv2"><span>Connecté</span><b>' + esc(sx ? sx.name : '—') + '</b><span>Licence</span><b>' + (l ? 'COVO Pro · ' + esc(l.mail) : '—') + '</b><span>Projets</span><b>' + DOC.projets.length + '</b></div>'
+        + '<div class="sg"><h4>🔑 Compte et licence</h4><div class="kv2"><span>Connecté</span><b>' + esc(sx ? sx.name : '—') + '</b><span>Mode</span><b><span class="mode-b">' + (LICMODE === 'solo' ? '📁 Indépendant' : '🛒 Satellite de COVO Pro') + '</span></b><span>Licence</span><b>' + (l ? esc(LICP) + ' · ' + esc(l.mail) : '—') + '</b><span>Identifiant Projets Pro</span><b>' + (ls(PWK, '') ? '✅ défini' : 'non défini') + '</b><span>Projets</span><b>' + DOC.projets.length + '</b></div>'
+        + '<div class="ghf" style="margin-top:10px"><div><label>' + (ls(PWK, '') ? 'Nouvel identifiant' : 'Créer un identifiant') + '</label><input id="pw-n1" type="password" autocomplete="new-password" maxlength="64" placeholder="ex : Ali2026"></div><div><label>Confirmation</label><input id="pw-n2" type="password" autocomplete="new-password" maxlength="64"></div></div>'
+        + '<div class="hint" style="margin:4px 0 0">Lettres et chiffres, 6 caractères minimum, au moins une lettre. Il fonctionne dans les deux modes, en plus des codes COVO Pro.</div>'
+        + '<div class="qrb" style="margin-top:8px"><button class="btn sec" data-qa="pwset">🔐 Enregistrer l’identifiant</button><button class="btn sec" data-qa="mode">' + (LICMODE === 'solo' ? '🛒 Passer en satellite (licence COVO Pro)' : '📁 Passer en indépendant (licence Projets Pro)') + '</button></div>'
         + '<div class="qrb" style="margin-top:10px"><button class="btn sec" data-qa="theme">🌓 Thème clair / sombre</button><button class="btn sec" data-qa="export">💾 Exporter</button><button class="btn dan" data-qa="logout">🚪 Se déconnecter</button></div></div>';
     $('mset').classList.add('on'); drawQR();
 }
@@ -962,6 +1002,8 @@ function setAct(a) {
         return;
     }
     if (a === 'ghcreate') return ghCreateRepo();
+    if (a === 'mode') { if (confirm(LICMODE === 'solo' ? 'Utiliser une licence COVO Pro (Projets Pro devient un satellite de COVO Pro) ?\n\nVos projets sont conservés.' : 'Utiliser une licence Projets Pro (fonctionnement indépendant, sans COVO Pro) ?\n\nVos projets sont conservés.')) switchMode(); return; }
+    if (a === 'pwset') { var n1 = $('pw-n1').value.trim(), n2 = $('pw-n2').value.trim(), er = pwdRule(n1); if (er) return toast('⚠️ ' + er); if (n1 !== n2) return toast('⚠️ Les deux identifiants ne sont pas identiques'); sha('pp|' + n1).then(function (h) { try { localStorage.setItem(PWK, h); } catch (e) {} toast('🔐 Identifiant Projets Pro enregistré'); openSettings(); }); return; }
     if (a === 'ghpush') { ghPush(true).then(openSettings); return; }
     if (a === 'ghpull') { ghPull('manual').then(openSettings); return; }
     if (a === 'ghdel') { if (!confirm('Ne plus sauvegarder les projets sur GitHub sur cet appareil ?\n\nLe fichier déjà enregistré sur GitHub n’est pas supprimé.')) return; try { localStorage.removeItem(GHK); localStorage.removeItem('covo_pp_gh_pending'); } catch (e) {} GH.err = ''; GH.dirty = false; ghUi(); return openSettings(); }
@@ -1277,30 +1319,63 @@ function setSession(u, remember) {
     return o;
 }
 function logout() { try { localStorage.removeItem(SKEY); sessionStorage.removeItem(SKEY); } catch (e) {} location.reload(); }
-function licence() { var l = lsJson('licOK_COVO Pro', null); if (!l || !l.mail || !l.key) return null; if (l.expire && new Date(l.expire) <= new Date()) return null; if (Date.now() - (+l.t || 0) > 7 * 864e5) return null; return l; }
-function licLabel() { var l = licence(), el = $('g-lic'); if (l) { el.className = 'lic ok'; el.innerHTML = '🔑 Licence COVO Pro · ' + esc(l.mail); } else { el.className = 'lic ko'; el.innerHTML = '🔑 ' + (navigator.onLine ? 'Activez votre licence COVO Pro pour continuer' : 'Connexion internet nécessaire pour vérifier la licence'); } }
+var LICMODE = window.PP_LICMODE === 'solo' ? 'solo' : 'covo', LICP = LICMODE === 'solo' ? 'Projets Pro' : 'COVO Pro';
+function hasCovo() { return !!(ls('covo_users', '') || ls('covo_products', '') || covoUser()); }
+/* satellite : Licence Pro peut retirer « Projets Pro » d'une licence COVO Pro (onglet « projets ») */
+function projOff() { if (LICMODE !== 'covo') return false; var d = lsJson('licData_COVO Pro', null); return !!(d && ((Array.isArray(d.ongletsOff) && d.ongletsOff.indexOf('projets') >= 0) || (Array.isArray(d.modules) && d.pv && d.modules.indexOf('Projets') < 0))); }
+function switchMode() { try { localStorage.setItem('covo_pp_licmode', LICMODE === 'solo' ? 'covo' : 'solo'); localStorage.removeItem(SKEY); sessionStorage.removeItem(SKEY); } catch (e) {} location.reload(); }
+/* identifiant propre à Projets Pro : lettres et chiffres, au moins une lettre (pas uniquement des chiffres) */
+var PWK = 'covo_pp_pwd_h';
+function pwdRule(v) { return !v ? 'Entrez un identifiant.' : v.length < 6 ? 'Au moins 6 caractères.' : !/^[A-Za-z0-9]+$/.test(v) ? 'Uniquement des lettres et des chiffres (sans espace ni accent).' : !/[A-Za-z]/.test(v) ? 'Ajoutez au moins une lettre : l’identifiant ne peut pas contenir uniquement des chiffres.' : ''; }
+function needCreate() { return !ls(PWK, '') && !hasCovo() && !ls('covo_master_pwd', ''); }
+function licence() { var l = lsJson('licOK_' + LICP, null); if (!l || !l.mail || !l.key) return null; if (l.expire && new Date(l.expire) <= new Date()) return null; if (Date.now() - (+l.t || 0) > 7 * 864e5) return null; return l; }
+function modeTxt() { return LICMODE === 'solo' ? 'Indépendant · licence Projets Pro' : 'Satellite de COVO Pro · licence COVO Pro'; }
+function licLabel() {
+    var l = licence(), el = $('g-lic');
+    if (l) { el.className = 'lic ok'; el.innerHTML = '<span>🔑</span><span>Licence ' + esc(LICP) + ' · ' + esc(l.mail) + '<small>' + modeTxt() + '</small></span>'; }
+    else { el.className = 'lic ko'; el.innerHTML = '<span>🔑</span><span>' + (navigator.onLine ? 'Activez votre licence ' + esc(LICP) + ' pour continuer' : 'Connexion internet nécessaire pour vérifier la licence') + '<small>' + modeTxt() + '</small></span>'; }
+    $('g-sw').textContent = LICMODE === 'solo' ? '🛒 Vous utilisez COVO Pro ? Passer à la licence COVO Pro (satellite)' : '📁 Sans COVO Pro ? Utiliser une licence Projets Pro (indépendant)';
+    var off = projOff();
+    $('g-off').innerHTML = off ? '<b>🔒 Projets Pro n’est pas inclus dans votre licence COVO Pro</b>Demandez l’accès : il se débloquera automatiquement dès qu’il sera ajouté à votre licence.<button type="button" class="btn pri" id="g-ask">📨 Demander l’accès</button>' : '';
+    if (off) $('g-ask').onclick = function () { if (window.licenceAskTab) window.licenceAskTab('projets'); else toast('Contactez votre vendeur pour ajouter Projets Pro à votre licence.'); };
+    $('g-form').classList.toggle('off', off);
+    var cr = !off && needCreate();
+    $('g-new').classList.toggle('on', cr); $('g-pw2').style.display = cr ? '' : 'none';
+    $('g-new').innerHTML = cr ? '🆕 <b>Première ouverture</b> : créez votre identifiant Projets Pro. Il servira à vous connecter sur cet appareil.' : '';
+    $('g-code').placeholder = cr ? 'Nouvel identifiant' : 'Identifiant'; $('g-hint').style.display = off ? 'none' : ''; $('g-rem').parentNode.style.display = off ? 'none' : '';
+    $('g-hint').textContent = cr ? '6 caractères minimum, lettres et chiffres, avec au moins une lettre (pas uniquement des chiffres).' : 'Lettres et chiffres acceptés (ex : Ali2026) — majuscules et minuscules sont différenciées.';
+    $('g-sub').textContent = cr ? 'Créer mon identifiant' : 'Se connecter';
+    $('g-sub').style.display = off ? 'none' : ''; $('g-code').parentNode.style.display = off ? 'none' : '';
+}
 var fails = +ls('covo_pp_fails', '0') || 0, lockUntil = +ls('covo_pp_lock', '0') || 0;
 function tryLogin(code) {
     code = String(code || '').trim();
-    if (!licence()) return Promise.resolve({ err: 'Licence COVO Pro non activée sur cet appareil.' });
+    if (!licence()) return Promise.resolve({ err: 'Licence ' + LICP + ' non activée sur cet appareil.' });
+    if (projOff()) return Promise.resolve({ err: 'Projets Pro n’est pas inclus dans votre licence COVO Pro.' });
+    if (needCreate()) { var e1 = pwdRule(code); if (e1) return Promise.resolve({ err: e1 }); if (code !== String($('g-code2').value || '').trim()) return Promise.resolve({ err: 'Les deux identifiants ne sont pas identiques.' });
+        return sha('pp|' + code).then(function (h) { try { localStorage.setItem(PWK, h); } catch (e) {} return { user: { id: 'USR-PP', username: 'Administrateur', role: 'admin' }, created: true }; }); }
     if (Date.now() < lockUntil) return Promise.resolve({ err: 'Trop d’essais. Réessayez dans ' + Math.ceil((lockUntil - Date.now()) / 1000) + ' s.' });
     if (!code) return Promise.resolve({ err: 'Entrez votre code.' });
     var users = lsJson('covo_users', []); if (!Array.isArray(users)) users = [];
     var u = users.filter(function (x) { return x && String(x.pin) === code; })[0];
     if (u) return Promise.resolve(isAdm(u) ? { user: u } : { err: 'Projets Pro est réservé aux administrateurs.' });
-    var stored = ls('covo_master_pwd', '');
-    var check = stored ? Promise.resolve(code === stored) : sha(code).then(function (h) { return h === MASTER_DEFAULT_H; });
-    return check.then(function (ok) { return ok ? { user: { id: 'USR-MASTER', username: 'Admin-Développeur', role: 'admin', isMaster: true } } : { err: 'Code incorrect.' }; });
+    var own = ls(PWK, '');
+    return (own ? sha('pp|' + code) : Promise.resolve('')).then(function (ph) {
+        if (own && ph === own) return { user: { id: 'USR-PP', username: 'Administrateur', role: 'admin' } };
+        var stored = ls('covo_master_pwd', '');
+        var check = stored ? Promise.resolve(code === stored) : sha(code).then(function (h) { return h === MASTER_DEFAULT_H; });
+        return check.then(function (ok) { return ok ? { user: { id: 'USR-MASTER', username: 'Admin-Développeur', role: 'admin', isMaster: true } } : { err: 'Code incorrect.' }; });
+    });
 }
 function gate() {
     var s = session();
-    if (s && licence()) { $('gate').classList.remove('on'); return true; }
+    if (s && licence() && !projOff()) { $('gate').classList.remove('on'); return true; }
     licLabel();
     var cu = covoUser(), alt = $('g-covo');
-    if (isAdm(cu) && licence()) { alt.style.display = ''; alt.textContent = '⚡ Continuer avec ma session COVO Pro (' + (cu.username || cu.name || 'admin') + ')'; } else alt.style.display = 'none';
+    if (isAdm(cu) && licence() && !projOff()) { alt.style.display = ''; alt.textContent = '⚡ Continuer avec ma session COVO Pro (' + (cu.username || cu.name || 'admin') + ')'; } else alt.style.display = 'none';
     $('gate').classList.add('on'); return false;
 }
-function onLogged() { $('gate').classList.remove('on'); ghUi(); bootRestore().then(function () { render(); }); render(); driveBoot(); instBtn(); if (window._ppFromQR && !installed()) { window._ppFromQR = false; setTimeout(install, 900); } }
+function onLogged() { $('gate').classList.remove('on'); $('m-covo').style.display = LICMODE === 'covo' || hasCovo() ? '' : 'none'; ghUi(); bootRestore().then(function () { render(); }); render(); driveBoot(); instBtn(); if (window._ppFromQR && !installed()) { window._ppFromQR = false; setTimeout(install, 900); } }
 function loginUi() {
     $('g-eye').onclick = function () { var i = $('g-code'); i.type = i.type === 'password' ? 'text' : 'password'; i.focus(); };
     $('g-form').addEventListener('submit', function (e) {
@@ -1311,12 +1386,16 @@ function loginUi() {
                 $('g-err').textContent = r.err; $('g-code').select(); return;
             }
             fails = 0; try { localStorage.setItem('covo_pp_fails', '0'); } catch (er) {}
-            setSession(r.user, $('g-rem').checked); $('g-code').value = ''; $('g-err').textContent = ''; onLogged();
+            setSession(r.user, $('g-rem').checked); $('g-code').value = ''; $('g-code2').value = ''; $('g-err').textContent = ''; onLogged();
+            if (r.created) toast('✅ Identifiant créé — gardez-le précieusement');
         });
     });
-    $('g-covo').onclick = function () { var cu = covoUser(); if (isAdm(cu) && licence()) { setSession(cu, $('g-rem').checked); onLogged(); } };
+    $('g-sw').onclick = switchMode;
+    $('g-covo').onclick = function () { var cu = covoUser(); if (isAdm(cu) && licence() && !projOff()) { setSession(cu, $('g-rem').checked); onLogged(); } };
     // la licence s'active dans la fenêtre de licence_check.js : on rafraîchit l'écran
-    setInterval(function () { if ($('gate').classList.contains('on')) { licLabel(); var s = session(); if (s && licence()) onLogged(); } }, 1500);
+    setInterval(function () { if ($('gate').classList.contains('on')) { licLabel(); var s = session(); if (s && licence() && !projOff()) onLogged(); } }, 1500);
+    // licence modifiée dans Licence Pro (Projets Pro retiré ou rajouté) : effet immédiat
+    window.addEventListener('licence:data', function () { if (projOff()) { $('mset').classList.remove('on'); gate(); } else if ($('gate').classList.contains('on')) licLabel(); });
 }
 function driveBoot() {
     driveIdle();
@@ -1363,7 +1442,7 @@ function install() {
     try { var th = localStorage.getItem('covo_pp_theme'); if (th) document.documentElement.setAttribute('data-theme', th); } catch (e) {}
     if (standalone()) lsSet('covo_pwa_installed_' + PWA, '1');
     // lancée depuis COVO Pro par le lien web+covoprojets: → l'ouverture directe fonctionne
-    try { var gm = location.hash.match(/[#&]gh=([A-Za-z0-9+/_-]+)/); if (gm) { var gc = JSON.parse(decodeURIComponent(escape(atob(gm[1])))); if (gc && gc.tok && gc.own && gc.rep) localStorage.setItem(GHK, JSON.stringify(gc)); history.replaceState(null, '', location.pathname + location.search); } } catch (e) {}
+    try { var gm = location.hash.match(/[#&]gh=([A-Za-z0-9+/_-]+)/); if (gm) { var gc = JSON.parse(decodeURIComponent(escape(atob(gm[1])))); if (gc && gc.tok && gc.own && gc.rep) localStorage.setItem(GHK, JSON.stringify(gc)); var nh = location.hash.replace(/[#&]gh=[^&]*/, '').replace(/^&/, '#'); history.replaceState(null, '', location.pathname + location.search + (nh === '#' ? '' : nh)); } } catch (e) {}
     try { if (/[?&]installer=1/.test(location.search)) { window._ppFromQR = true; history.replaceState(null, '', location.pathname); } } catch (e) {}
     try { if (/[?&]ouvrir=/.test(location.search)) { lsSet('covo_pwa_proto_' + PWA, '1'); lsSet('covo_pwa_installed_' + PWA, '1'); history.replaceState(null, '', location.pathname); } } catch (e) {}
     try { if ('launchQueue' in window) window.launchQueue.setConsumer(function (p) { if (p && p.targetURL && /[?&]ouvrir=/.test(p.targetURL)) { lsSet('covo_pwa_proto_' + PWA, '1'); lsSet('covo_pwa_installed_' + PWA, '1'); } }); } catch (e) {}
