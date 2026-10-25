@@ -247,6 +247,42 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
 .modal .mf .btn{flex:1;}
 .x2{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--soft);color:var(--ink2);cursor:pointer;}
 @media (max-width:640px){.modal{padding:0;align-items:flex-end;}.modal .bx{border-radius:20px 20px 0 0;max-height:94vh;}}
+/* images */
+.tt{display:flex;align-items:center;gap:10px;min-width:0;}
+.tt h3{min-width:0;}
+.cv{width:38px;height:38px;border-radius:10px;background:var(--soft2) center/cover no-repeat;border:1px solid var(--line);flex-shrink:0;cursor:zoom-in;}
+.gal{margin-bottom:12px;}
+.hero{position:relative;border-radius:16px;overflow:hidden;background:var(--soft2);aspect-ratio:16/9;max-height:300px;width:100%;cursor:zoom-in;border:1px solid var(--line);}
+.hero img{width:100%;height:100%;object-fit:cover;display:block;}
+.hero .ko-t{display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-weight:800;color:var(--crit);font-size:.86rem;text-align:center;padding:10px;}
+.hero.ko img{display:none;}.hero.ko .ko-t{display:flex;}
+.hero.none{cursor:default;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;padding:16px;aspect-ratio:auto;min-height:130px;border-style:dashed;}
+.hero.none span{font-size:2rem;}.hero.none b{font-size:.92rem;}.hero.none small{font-size:.74rem;color:var(--mute);font-weight:600;}
+.th{display:flex;gap:6px;overflow-x:auto;margin-top:8px;scrollbar-width:none;}
+.ti{width:62px;height:46px;border-radius:9px;background:var(--soft2) center/cover no-repeat;flex-shrink:0;cursor:zoom-in;border:2px solid transparent;}
+.ti.on{border-color:var(--acc);}
+.imadd{display:flex;gap:8px;margin-top:10px;}
+.imadd input{flex:1;min-width:0;padding:10px 12px;border:1.5px solid var(--line);border-radius:11px;background:var(--surface);color:var(--ink);font-size:.88rem;}
+.imadd input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--accb);}
+.imprev{display:flex;align-items:center;gap:10px;margin-top:6px;font-size:.76rem;font-weight:800;color:var(--crit);min-height:0;}
+.imprev img{width:84px;height:56px;object-fit:cover;border-radius:9px;border:1px solid var(--line);}
+.imprev span{color:var(--good);}
+.imlist{margin-top:10px;display:flex;flex-direction:column;gap:6px;}
+.iml{display:grid;grid-template-columns:40px minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:6px 8px;border-radius:11px;background:var(--surface);border:1px solid var(--line);font-size:.78rem;}
+.iml .tn{width:40px;height:30px;border-radius:7px;background:var(--soft2) center/cover no-repeat;cursor:zoom-in;}
+.iml a{color:var(--acc);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none;}
+.iml em{font-style:normal;font-size:.68rem;font-weight:900;color:var(--good);}
+.iml button{border:none;background:transparent;cursor:pointer;font-size:.9rem;color:var(--mute);border-radius:7px;padding:3px 6px;}
+.iml button:hover{background:var(--soft);color:var(--ink);}
+#zoom{position:fixed;inset:0;z-index:95;background:rgba(2,6,23,.88);display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;cursor:zoom-out;}
+#zoom.on{display:flex;}
+#zoom img{max-width:100%;max-height:calc(100vh - 90px);border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+#zoom a{color:#fff;font-weight:800;font-size:.86rem;}
+/* bandeau de restauration */
+#rbar{display:none;align-items:center;gap:10px;flex-wrap:wrap;max-width:1100px;margin:12px auto 0;padding:10px 12px;border-radius:14px;background:var(--warnb);border:1px solid color-mix(in srgb,var(--warn) 40%,transparent);font-size:.84rem;font-weight:700;color:var(--ink);}
+#rbar.on{display:flex;}
+#rbar span{flex:1;min-width:200px;}
+@media (max-width:1128px){#rbar{margin:12px 14px 0;}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
 </style>
 </head>
@@ -262,7 +298,9 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
     <button class="ib" id="b-menu" aria-label="Menu">☰</button>
   </div>
 </header>
+<div id="rbar"><span>☁️ Les dernières sauvegardes de vos projets n’ont pas pu être récupérées automatiquement.</span><button class="btn ok" id="r-go">⤵️ Récupérer maintenant</button><button class="x2" id="r-x" aria-label="Fermer">✕</button></div>
 <main id="main"></main>
+<div id="zoom" aria-label="Image du projet"></div>
 <button class="fab" id="fab" style="display:none">➕ Projet</button>
 
 <div class="menu" id="menu">
@@ -299,6 +337,7 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
     <div class="f"><label>N° de priorité</label><input id="n-rk" type="number" min="1" step="1" inputmode="numeric"><small id="n-rkh"></small></div>
     <div class="f"><label>Catégorie</label><input id="n-cat" list="dl-cat" maxlength="40" placeholder="ex : Magasin, Travaux…"></div>
     <div class="f"><label>Échéance</label><input id="n-fin" type="date"></div>
+    <div class="f full"><label>Image du projet (lien web)</label><input id="n-img" type="url" inputmode="url" placeholder="https://… (photo, plan, maquette, lien Google Drive…)" autocomplete="off"><div class="imprev" id="n-prev"></div></div>
     <div class="f full"><label>Description</label><textarea id="n-desc" maxlength="2000" placeholder="Objectif, détails…"></textarea></div>
     <div class="f full"><label>Votants (séparés par des virgules)</label><input id="n-vot" maxlength="400" placeholder="ex : Ali, Sarah, Kevin"><small>Le projet passe « En vote » ; il est validé automatiquement à la majorité.</small></div>
   </div></div>
@@ -388,6 +427,19 @@ function spent(p) { return (p.depenses || []).reduce(function (a, d) { return a 
 /* Financement : montants ajoutés à la main (apports, épargne, subventions… ; négatif = retrait) */
 function funded(p) { return (p.apports || []).reduce(function (a, d) { return a + (+d.mt || 0); }, 0); }
 function dispo(p) { return funded(p) - spent(p); }                 // montant disponible = financé − dépensé
+/* Images du projet (liens web) : la 1ʳᵉ est l'image principale */
+function imgUrl(u) {
+    u = String(u || '').trim(); if (!u) return '';
+    var m;
+    if ((m = u.match(/drive\.google\.com\/file\/d\/([\w-]+)/)) || (m = u.match(/drive\.google\.com\/(?:open|uc)\?(?:.*&)?id=([\w-]+)/))) return 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w1600';
+    if (/dropbox\.com\//.test(u)) { u = u.replace(/([?&])dl=0/, '$1raw=1'); if (!/[?&]raw=1/.test(u)) u += (u.indexOf('?') >= 0 ? '&' : '?') + 'raw=1'; return u; }
+    if (/^(https?:)?\/\//i.test(u)) return u.indexOf('//') === 0 ? 'https:' + u : u;
+    if (/^data:image\//i.test(u)) return u;
+    if (/^[\w.-]+\.[a-z]{2,}\//i.test(u)) return 'https://' + u;
+    return '';
+}
+function imgs(p) { return (p.images || []).filter(Boolean); }
+function cover(p) { return imgs(p)[0] || ''; }
 function aFinancer(p) { return Math.max(0, (+p.budget || 0) - funded(p)); }
 function byId(id) { return DOC.projets.filter(function (p) { return p.id === id; })[0] || null; }
 function who() { var s = session(); return s ? s.name : 'Admin'; }
@@ -479,7 +531,7 @@ function card(p, drag) {
     return '<article class="pj st-' + esc(p.statut) + '" data-id="' + esc(p.id) + '">'
         + '<span class="hd"' + (drag && r ? '' : ' style="visibility:hidden"') + ' title="Glisser pour changer la priorité" aria-label="Déplacer">⠿</span>'
         + '<span class="rk' + (r === 1 ? ' r1' : r === 2 ? ' r2' : r === 3 ? ' r3' : '') + (r ? '' : ' na') + '"><b class="num">' + (r || '–') + '</b><small>' + (r ? 'priorité' : st[1]) + '</small></span>'
-        + '<div style="min-width:0"><h3>' + esc(p.nom) + '</h3><div class="mt"><span class="stt">' + st[0] + ' ' + st[1] + '</span>' + (p.cat ? '<span class="tag">🏷️ ' + esc(p.cat) + '</span>' : '') + (p.fin ? '<span class="tag"' + (d != null && d < 0 && isActive(p) ? ' style="color:var(--crit)"' : '') + '>📅 ' + fmtD(p.fin) + '</span>' : '') + (p.resp ? '<span class="tag">👤 ' + esc(p.resp) + '</span>' : '') + '</div>'
+        + '<div style="min-width:0"><div class="tt">' + (cover(p) ? '<span class="cv" style="background-image:url(\'' + esc(cover(p)) + '\')" data-zoom="' + esc(cover(p)) + '" title="Voir l’image"></span>' : '') + '<h3>' + esc(p.nom) + '</h3></div><div class="mt"><span class="stt">' + st[0] + ' ' + st[1] + '</span>' + (p.cat ? '<span class="tag">🏷️ ' + esc(p.cat) + '</span>' : '') + (p.fin ? '<span class="tag"' + (d != null && d < 0 && isActive(p) ? ' style="color:var(--crit)"' : '') + '>📅 ' + fmtD(p.fin) + '</span>' : '') + (p.resp ? '<span class="tag">👤 ' + esc(p.resp) + '</span>' : '') + '</div>'
         + '<div class="money"><span><small>Prix</small><b class="num">' + (b ? eur(b) : '—') + '</b></span><span><small>Disponible</small><b class="num" style="color:' + (di < 0 ? 'var(--crit)' : di > 0 ? 'var(--good)' : 'var(--ink2)') + '">' + eur(di) + '</b></span><span class="hm"><small>Dépensé</small><b class="num"' + (b && s > b ? ' style="color:var(--crit)"' : '') + '>' + eur(s) + '</b></span></div>'
         + '<div class="bud"><div class="tr"><i style="width:' + Math.min(100, fr * 100).toFixed(1) + '%;--bc:var(--good)"></i></div><div class="lb"><span class="num">' + (b ? Math.min(100, Math.round(fr * 100)) + ' % financé' : 'prix non défini') + '</span><span class="num">' + (b ? (aFinancer(p) > 0 ? 'reste à financer ' + eur(aFinancer(p)) : '✅ entièrement financé') : '') + '</span></div></div></div>'
         + '<div class="side"><button class="addm" data-addm="1" title="Ajouter un montant disponible">＋ €</button>' + (v.n ? '<span class="vt">🗳️ ' + v.pour + '/' + v.n + ' pour' + (v.pend ? ' · ' + v.pend + ' en attente' : '') + '</span>' : '<span class="vt" style="color:var(--mute)">Aucun votant</span>')
@@ -525,7 +577,7 @@ function dragEnd() {
 
 /* ───────────── Fiche projet ───────────── */
 var CUR = null, TAB = 'ap';
-function openSheet(id, tab) { CUR = id; TAB = tab || 'ap'; sheetRender(); $('ov').classList.add('on'); $('sheet').classList.add('on'); }
+function openSheet(id, tab) { CUR = id; TAB = tab || 'ap'; autoPull(20000); sheetRender(); $('ov').classList.add('on'); $('sheet').classList.add('on'); }
 function closeSheet() { CUR = null; $('ov').classList.remove('on'); $('sheet').classList.remove('on'); }
 function sheetRender() {
     var p = byId(CUR); if (!p) return closeSheet();
@@ -536,7 +588,12 @@ function sheetRender() {
     var v = voteState(p); $('s-tabs').querySelector('[data-t="vo"]').textContent = '🗳️ Votes' + (v.n ? ' ' + v.pour + '/' + v.n : '');
     var h = '', f = '';
     if (TAB === 'ap') {
-        var A = active();
+        var A = active(), IM = imgs(p);
+        h += '<div class="gal">' + (IM.length ? '<div class="hero" data-zoom="' + esc(IM[0]) + '"><img src="' + esc(IM[0]) + '" alt="" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add(\'ko\')"><span class="ko-t">⚠️ Image introuvable — vérifiez le lien</span></div>'
+                + (IM.length > 1 ? '<div class="th">' + IM.map(function (u, i) { return '<span class="ti' + (i ? '' : ' on') + '" style="background-image:url(\'' + esc(u) + '\')" data-zoom="' + esc(u) + '"></span>'; }).join('') + '</div>' : '')
+                : '<div class="hero none"><span>🖼️</span><b>Aucune image pour ce projet</b><small>Collez ci-dessous le lien web d’une image (photo, plan, devis, maquette…)</small></div>')
+            + '<div class="imadd"><input id="i-url" type="url" inputmode="url" placeholder="https://… lien de l’image (Google Drive, site web…)" autocomplete="off"><button class="btn pri" id="i-add">🖼️ Joindre</button></div><div class="imprev" id="i-prev"></div>'
+            + (IM.length ? '<div class="imlist">' + IM.map(function (u, i) { return '<div class="iml"><span class="tn" style="background-image:url(\'' + esc(u) + '\')" data-zoom="' + esc(u) + '"></span><a href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">' + esc(u.replace(/^https?:\/\//, '').slice(0, 60)) + '</a>' + (i ? '<button data-icov="' + i + '" title="Mettre en image principale">⭐</button>' : '<em>principale</em>') + '<button data-idel="' + i + '" title="Retirer l’image">✕</button></div>'; }).join('') + '</div>' : '') + '</div>';
         h += '<div class="prio"><span class="rk' + (r === 1 ? ' r1' : r === 2 ? ' r2' : r === 3 ? ' r3' : '') + '"><b class="num">' + (r || '–') + '</b><small>priorité</small></span>'
             + (r ? '<div class="tx"><b>N° de priorité</b>Saisissez un autre numéro (1 à ' + A.length + ') : le projet prend cette place et les autres se décalent.</div><input id="e-rk" type="number" min="1" max="' + A.length + '" value="' + r + '" inputmode="numeric" aria-label="Numéro de priorité">'
                 : '<div class="tx"><b>Hors classement</b>Un projet terminé ou refusé n’a plus de numéro. Changez son statut pour le remettre dans la liste.</div>') + '</div>';
@@ -604,15 +661,16 @@ function sheetSave() {
 
 /* ───────────── Nouveau projet ───────────── */
 function openNew() {
-    ['n-nom', 'n-bud', 'n-dis', 'n-cat', 'n-fin', 'n-desc', 'n-vot'].forEach(function (i) { $(i).value = ''; });
+    ['n-nom', 'n-bud', 'n-dis', 'n-cat', 'n-fin', 'n-desc', 'n-vot', 'n-img'].forEach(function (i) { $(i).value = ''; });
     var n = active().length + 1; $('n-rk').value = n; $('n-rk').max = n; $('n-rkh').textContent = '1 = prioritaire · ' + n + ' = en dernier';
     $('mnew').classList.add('on'); setTimeout(function () { $('n-nom').focus(); }, 80);
 }
 function createProject() {
     var nom = $('n-nom').value.trim(); if (!nom) { $('n-nom').focus(); return toast('Donnez un nom au projet'); }
     var vot = $('n-vot').value.split(/[,;\n]/).map(function (x) { return x.trim(); }).filter(Boolean);
-    var init = +String($('n-dis').value).replace(',', '.') || 0;
-    var p = { id: uid(), nom: nom, apports: init ? [{ id: uid('A'), date: ymd(), lib: 'Montant de départ', mt: Math.round(init * 100) / 100, t: Date.now(), by: who() }] : [], budget: +$('n-bud').value || 0, cat: $('n-cat').value.trim(), fin: $('n-fin').value, desc: $('n-desc').value.trim(), statut: vot.length ? 'vote' : 'idee', regle: 'majorite', depenses: [], votants: vot.map(function (x) { return { id: uid('V'), nom: x, vote: null }; }), avancement: 0, createdAt: Date.now(), updatedAt: Date.now(), hist: [] };
+    var init = +String($('n-dis').value).replace(',', '.') || 0, nimg = imgUrl($('n-img').value);
+    if ($('n-img').value.trim() && !nimg) { $('n-img').focus(); return toast('Lien d’image non valide (il doit commencer par https://)'); }
+    var p = { id: uid(), nom: nom, images: nimg ? [nimg] : [], apports: init ? [{ id: uid('A'), date: ymd(), lib: 'Montant de départ', mt: Math.round(init * 100) / 100, t: Date.now(), by: who() }] : [], budget: +$('n-bud').value || 0, cat: $('n-cat').value.trim(), fin: $('n-fin').value, desc: $('n-desc').value.trim(), statut: vot.length ? 'vote' : 'idee', regle: 'majorite', depenses: [], votants: vot.map(function (x) { return { id: uid('V'), nom: x, vote: null }; }), avancement: 0, createdAt: Date.now(), updatedAt: Date.now(), hist: [] };
     hist(p, 'Projet créé' + (p.budget ? ' · prix ' + eur(p.budget) : '') + (init ? ' · disponible ' + eur(init) : '') + (vot.length ? ' · ' + vot.length + ' votant' + (vot.length > 1 ? 's' : '') : ''));
     var A = active(), rk = Math.max(1, Math.min(A.length + 1, Math.round(+$('n-rk').value) || A.length + 1));
     A.splice(rk - 1, 0, p);
@@ -632,6 +690,8 @@ function bind() {
         var m = t.closest('#menu button[data-m]'); if (m) { $('menu').classList.remove('on'); return menuAct(m.getAttribute('data-m')); }
         if (!t.closest('#menu') && !t.closest('#b-menu')) $('menu').classList.remove('on');
         var c = t.closest('[data-f]'); if (c && c.closest('#main')) { F.f = c.getAttribute('data-f'); try { localStorage.setItem('covo_pp_ui', JSON.stringify({ f: F.f })); } catch (er) {} return render(); }
+        var zm = t.closest('[data-zoom]'); if (zm) { e.stopPropagation(); return zoom(zm.getAttribute('data-zoom')); }
+        if (t.closest('#zoom')) { $('zoom').classList.remove('on'); return; }
         var am = t.closest('[data-addm]'); if (am) { openAmount(am.closest('.pj').getAttribute('data-id')); return; }
         if (t.id === 'q-ok') { var qp = byId(QA), qs = document.querySelector('#q-sg .on') && document.querySelector('#q-sg .on').getAttribute('data-sg') === '-1' ? -1 : 1; if (qp && addAmount(qp, qs * (+String($('q-mt').value).replace(',', '.') || 0), $('q-lib').value.trim(), $('q-date').value, true)) $('mamt').classList.remove('on'); return; }
         var qsg = t.closest('#q-sg [data-sg]'); if (qsg) { document.querySelectorAll('#q-sg button').forEach(function (x) { x.classList.toggle('on', x === qsg); }); $('q-ok').textContent = qsg.getAttribute('data-sg') === '-1' ? '➖ Retirer le montant' : '💵 Ajouter le montant'; $('q-ok').className = 'btn ' + (qsg.getAttribute('data-sg') === '-1' ? 'dan' : 'ok'); return; }
@@ -643,6 +703,9 @@ function bind() {
         var pjc = t.closest('.pj'); if (pjc && !t.closest('.hd') && !DR && Date.now() - (window._ppDragAt || 0) > 350) return openSheet(pjc.getAttribute('data-id'));
         var p2 = CUR ? byId(CUR) : null; if (!p2) return;
         if (t.id === 'e-save') return sheetSave();
+        if (t.id === 'i-add') { var iu = imgUrl($('i-url').value); if (!iu) { $('i-url').focus(); return toast('Collez un lien web d’image valide (https://…)'); } if (imgs(p2).indexOf(iu) >= 0) return toast('Cette image est déjà jointe'); (p2.images = imgs(p2)).push(iu); hist(p2, '🖼️ Image jointe'); touch(p2); save(); toast('🖼️ Image jointe au projet'); return sheetRender(); }
+        var ic = t.closest('[data-icov]'); if (ic) { var L = imgs(p2), k = +ic.getAttribute('data-icov'), u0 = L.splice(k, 1)[0]; L.unshift(u0); p2.images = L; hist(p2, '⭐ Image principale changée'); touch(p2); save(); return sheetRender(); }
+        var idl = t.closest('[data-idel]'); if (idl) { if (!confirm('Retirer cette image du projet ?')) return; var L2 = imgs(p2); L2.splice(+idl.getAttribute('data-idel'), 1); p2.images = L2; hist(p2, '🖼️ Image retirée'); touch(p2); save(); return sheetRender(); }
         if (t.id === 's-del') { if (confirm('Supprimer définitivement le projet « ' + p2.nom + ' » ?')) { DOC.deleted[p2.id] = Date.now(); DOC.projets = DOC.projets.filter(function (x) { return x !== p2; }); closeSheet(); save(true); toast('🗑️ Projet supprimé'); } return; }
         var sg = t.closest('[data-sg]'); if (sg) { document.querySelectorAll('#a-sg button').forEach(function (x) { x.classList.toggle('on', x === sg); }); $('a-add').textContent = sg.getAttribute('data-sg') === '-1' ? '➖ Retirer' : '💵 Valider'; $('a-add').className = 'btn ' + (sg.getAttribute('data-sg') === '-1' ? 'dan' : 'ok'); return; }
         if (t.id === 'a-add') { var sgn = document.querySelector('#a-sg .on') && document.querySelector('#a-sg .on').getAttribute('data-sg') === '-1' ? -1 : 1; addAmount(p2, sgn * (+String($('a-mt').value).replace(',', '.') || 0), $('a-lib').value.trim(), $('a-date').value); return; }
@@ -675,6 +738,8 @@ function bind() {
         if (e.key === 'Enter' && (e.target.id === 'd-lib' || e.target.id === 'd-mt')) { e.preventDefault(); $('d-add').click(); }
         if (e.key === 'Enter' && (e.target.id === 'a-lib' || e.target.id === 'a-mt')) { e.preventDefault(); $('a-add').click(); }
         if (e.key === 'Enter' && e.target.closest && e.target.closest('#mamt')) { e.preventDefault(); $('q-ok').click(); }
+        if (e.key === 'Enter' && e.target.id === 'i-url') { e.preventDefault(); $('i-add').click(); }
+        if (e.key === 'Escape' && $('zoom').classList.contains('on')) { $('zoom').classList.remove('on'); return; }
         if (e.key === 'Enter' && e.target.id === 'e-rk') { e.preventDefault(); var p3 = byId(CUR); if (p3) { setRank(p3, +e.target.value); sheetRender(); } }
         if (e.key === 'Enter' && e.target.closest && e.target.closest('#mnew') && e.target.tagName !== 'TEXTAREA') { e.preventDefault(); createProject(); }
     });
@@ -684,6 +749,7 @@ function bind() {
         if (e.target.id === 'v-rule' && p) { p.regle = e.target.value; hist(p, 'Règle de vote : ' + (p.regle === 'unanimite' ? 'unanimité' : 'majorité')); applyVote(p); touch(p); save(); sheetRender(); }
     });
     document.addEventListener('input', function (e) {
+        if (e.target.id === 'i-url' || e.target.id === 'n-img') { var pv = $(e.target.id === 'i-url' ? 'i-prev' : 'n-prev'), u = imgUrl(e.target.value); if (pv) pv.innerHTML = u ? '<img src="' + esc(u) + '" alt="" referrerpolicy="no-referrer" onerror="this.parentNode.innerHTML=\'⚠️ Aucune image à ce lien\'"><span>Aperçu</span>' : (e.target.value.trim() ? '⚠️ Le lien doit commencer par https://' : ''); }
         if (e.target.id === 'q') { F.q = e.target.value; clearTimeout(bind.t); bind.t = setTimeout(function () { render(); var q = $('q'); if (q) { q.focus(); q.setSelectionRange(q.value.length, q.value.length); } }, 150); }
         if (e.target.id === 'e-av') $('e-avv').textContent = e.target.value + ' %';
     });
@@ -691,11 +757,14 @@ function bind() {
     document.addEventListener('pointermove', dragMove);
     document.addEventListener('pointerup', dragEnd); document.addEventListener('pointercancel', dragEnd);
     $('b-inst').onclick = install;
-    $('b-menu').onclick = function () { $('menu').classList.toggle('on'); $('m-inf').textContent = 'Dernière sauvegarde Drive : ' + (GD.last ? fmtDT(GD.last) : 'jamais') + ' · ' + DOC.projets.length + ' projet(s)'; };
+    $('r-go').onclick = function () { $('rbar').classList.remove('on'); driveConnect(false, true); };
+    $('r-x').onclick = function () { $('rbar').classList.remove('on'); };
+    $('b-menu').onclick = function () { $('menu').classList.toggle('on'); $('m-inf').textContent = 'Dernière sauvegarde Drive : ' + (GD.last ? fmtDT(GD.last) : 'jamais') + ' · dernière restauration : ' + (GD.restored || +ls('covo_projets_restored', '0') ? fmtDT(GD.restored || +ls('covo_projets_restored', '0')) : 'jamais') + ' · ' + DOC.projets.length + ' projet(s)'; };
     $('drive').onclick = function () { if (GD.connected) driveSaveNow(true); else driveConnect(false); };
     $('imp').onchange = importFile;
     window.addEventListener('resize', function () { $('fab').style.display = innerWidth <= 640 && session() ? '' : 'none'; });
 }
+function zoom(u) { var z = $('zoom'); z.innerHTML = '<img src="' + esc(u) + '" alt="" referrerpolicy="no-referrer"><a href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">↗ Ouvrir l’original</a>'; z.classList.add('on'); }
 var QA = null;
 function openAmount(id) {
     var p = byId(id); if (!p) return; QA = id;
@@ -779,10 +848,11 @@ function driveConnect(silent, thenPull) {
             client_id: cid, scope: GD_SCOPE, login_hint: ls('gdrive_hint_email', ''),
             callback: function (r) {
                 if (GD.wait) { var w = GD.wait; GD.wait = null; if (!r.error) GD.token = r.access_token; return w(!r.error); }
-                if (r.error) { GD.connected = false; driveIdle(); if (!silent) toast('❌ Connexion Google Drive refusée'); return; }
+                if (r.error) { GD.connected = false; driveIdle(); restoreBanner(true); if (!silent) toast('❌ Connexion Google Drive refusée'); return; }
                 GD.token = r.access_token; GD.connected = true; try { localStorage.setItem('gdrive_connected', '1'); } catch (e) {}
                 if (!silent) toast('✅ Google Drive connecté');
-                drivePull(!!thenPull).then(function () { if (GD.dirty) driveSaveNow(false); else driveIdle(); });
+                restoreBanner(false);
+                drivePull(thenPull === true ? true : (thenPull === 'auto' ? 'auto' : false)).then(function () { if (GD.dirty) driveSaveNow(false); else driveIdle(); });
             }
         });
         GD.client.requestAccessToken({ prompt: '' });
@@ -824,8 +894,10 @@ function drivePull(manual) {
             var remoteNeeds = JSON.stringify(m.projets) !== JSON.stringify(remote.projets);
             DOC = m; try { localStorage.setItem(KEY, JSON.stringify(DOC)); } catch (e) {}
             if (remoteNeeds) { GD.dirty = true; try { localStorage.setItem('covo_projets_pending', '1'); } catch (e) {} }
-            if (changedLocal) { render(); if (CUR) sheetRender(); }
-            if (manual) toast(changedLocal ? '⤵️ Projets récupérés depuis Drive' : '✅ Les projets sont déjà à jour');
+            GD.restored = Date.now(); try { localStorage.setItem('covo_projets_restored', String(GD.restored)); } catch (e) {}
+            if (changedLocal) { render(); if (CUR && !editing()) sheetRender(); }
+            if (manual === 'auto') { if (changedLocal) toast('⤵️ Dernières sauvegardes restaurées (' + new Date(+remote.updatedAt || Date.now()).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) + ')'); }
+            else if (manual) toast(changedLocal ? '⤵️ Projets récupérés depuis Drive' : '✅ Les projets sont déjà à jour');
         });
     }).catch(function (e) { if (manual) toast('❌ ' + e.message); }).then(driveIdle);
 }
@@ -850,7 +922,16 @@ function driveSaveNow(manual) {
         if (manual) toast('❌ Sauvegarde Drive impossible : ' + e.message);
     }).then(function () { GD.saving = false; driveIdle(); if (GD.again) { GD.again = false; driveSaveNow(false); } });
 }
-document.addEventListener('visibilitychange', function () { if (!document.hidden && GD.connected && Date.now() - GD.pulled > 60000) drivePull(false); });
+/* restauration automatique : à chaque ouverture de l'application, au retour sur l'application et à l'ouverture d'un projet */
+function editing() { var a = document.activeElement; return !!(a && a.closest && a.closest('#sheet') && /INPUT|TEXTAREA|SELECT/.test(a.tagName)); }
+function autoPull(minGap) { if (GD.connected && !GD.saving && Date.now() - GD.pulled > (minGap || 20000)) return drivePull('auto'); return Promise.resolve(); }
+document.addEventListener('visibilitychange', function () { if (!document.hidden) { if (GD.connected) autoPull(15000); else if (session() && ls('gdrive_client_id', '')) restoreBanner(true); } });
+window.addEventListener('focus', function () { autoPull(30000); });
+function restoreBanner(show) {
+    var b = $('rbar'); if (!b) return;
+    if (!show || GD.connected || !session()) { b.classList.remove('on'); return; }
+    b.classList.add('on');
+}
 window.addEventListener('online', function () { if (GD.connected && GD.dirty) driveSaveNow(false); });
 
 /* ───────────── Connexion (licence COVO Pro + code administrateur) ───────────── */
@@ -907,7 +988,14 @@ function loginUi() {
     // la licence s'active dans la fenêtre de licence_check.js : on rafraîchit l'écran
     setInterval(function () { if ($('gate').classList.contains('on')) { licLabel(); var s = session(); if (s && licence()) onLogged(); } }, 1500);
 }
-function driveBoot() { driveIdle(); if (ls('gdrive_connected', '') === '1' && ls('gdrive_client_id', '')) driveConnect(true); }
+function driveBoot() {
+    driveIdle();
+    if (ls('gdrive_client_id', '') && ls('gdrive_connected', '') === '1') {
+        driveConnect(true, 'auto');
+        // si la connexion silencieuse n'aboutit pas (navigateur qui bloque la fenêtre Google), on propose de récupérer en 1 clic
+        setTimeout(function () { if (!GD.connected) restoreBanner(true); }, 9000);
+    } else if (ls('gdrive_client_id', '')) restoreBanner(true);
+}
 
 /* ───────────── Application installable (téléphone, tablette, ordinateur) ───────────── */
 function standalone() { return (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true; }
