@@ -1,7 +1,7 @@
 /* Projets Pro — service worker : l'application s'ouvre même hors connexion.
    Pages : réseau d'abord (toujours la dernière version), copie locale si pas de réseau.
    Google (Drive, connexion) et la licence ne sont jamais mis en cache. */
-var C = 'projets-pro-v2';
+var C = 'projets-pro-v3';
 var CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 self.addEventListener('install', function (e) { e.waitUntil(caches.open(C).then(function (c) { return c.addAll(CORE); }).catch(function () {})); self.skipWaiting(); });
 self.addEventListener('activate', function (e) { e.waitUntil(caches.keys().then(function (k) { return Promise.all(k.filter(function (x) { return x !== C; }).map(function (x) { return caches.delete(x); })); })); self.clients.claim(); });
