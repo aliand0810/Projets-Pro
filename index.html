@@ -243,7 +243,8 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
 .lic{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:11px;font-size:.78rem;font-weight:800;margin-bottom:12px;}
 .lic.ok{background:var(--goodb);color:var(--good);}.lic.ko{background:var(--warnb);color:var(--warn);}
 .pw{position:relative;}
-.pw input{width:100%;padding:13px 46px 13px 14px;border:1.5px solid var(--line);border-radius:13px;background:var(--soft);color:var(--ink);font-size:1.05rem;letter-spacing:2px;}
+.pw input{width:100%;padding:13px 46px 13px 14px;border:1.5px solid var(--line);border-radius:13px;background:var(--soft);color:var(--ink);font-size:1.05rem;letter-spacing:1px;}
+.g-hint{font-size:.72rem;color:var(--mute);font-weight:600;margin-top:6px;}
 .pw button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:transparent;font-size:1.1rem;cursor:pointer;padding:6px;}
 #g-err{min-height:18px;margin:8px 0;font-size:.8rem;font-weight:800;color:var(--crit);text-align:center;}
 .rem{display:flex;align-items:center;gap:8px;font-size:.82rem;font-weight:700;color:var(--ink2);margin-bottom:12px;}
@@ -310,6 +311,21 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
 .kv2 span{color:var(--mute);font-weight:700;}.kv2 b{font-weight:800;word-break:break-all;}
 @media (max-width:560px){.qrw{grid-template-columns:1fr;justify-items:center;text-align:left;}.qrs{width:100%;}}
 @media print{body>*:not(#mset){display:none!important;}#mset{position:static!important;background:none!important;display:block!important;}#mset .mh,#mset .mf,#mset .qrb,#mset .qrt,#mset .sg:not(.qrsec){display:none!important;}#mset .bx{box-shadow:none!important;max-height:none!important;}}
+/* GitHub + écran de restauration */
+#ghb.on{background:rgba(63,191,63,.28);}#ghb.wait{background:rgba(250,178,25,.3);}#ghb.ko{background:rgba(236,107,107,.35);}
+#boot{position:fixed;inset:0;z-index:99;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(16,17,20,.55);backdrop-filter:blur(4px);}
+#boot.on{display:flex;}
+#boot .bx{background:var(--surface);color:var(--ink);border-radius:18px;padding:22px;width:min(340px,100%);text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.35);display:flex;flex-direction:column;align-items:center;gap:8px;}
+#boot b{font-size:.98rem;font-weight:900;}#boot small{font-size:.76rem;color:var(--mute);font-weight:700;}
+#boot .sp{width:38px;height:38px;border-radius:50%;border:4px solid var(--soft2);border-top-color:var(--acc);animation:spin .8s linear infinite;}
+#boot .btn{margin-top:6px;padding:7px 12px;font-size:.78rem;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ghf{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ghf .full{grid-column:1/-1;}
+.ghf input{width:100%;padding:9px 11px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font-size:.86rem;}
+.ghf label{display:block;font-size:.66rem;font-weight:900;color:var(--mute);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
+.ghst{font-size:.78rem;font-weight:800;margin-top:8px;}.ghst.ok{color:var(--good);}.ghst.ko{color:var(--crit);}
+@media (max-width:560px){.ghf{grid-template-columns:1fr;}}
 /* bandeau d'installation */
 #ibar{display:none;align-items:center;gap:10px;flex-wrap:wrap;margin:12px clamp(12px,2vw,28px) 0;padding:10px 12px;border-radius:14px;background:var(--accb);border:1px solid color-mix(in srgb,var(--acc) 35%,transparent);}
 #ibar.on{display:flex;}
@@ -332,6 +348,7 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
     <div class="logo">📁</div>
     <div class="grow"><h1>Projets Pro</h1><div class="st" id="st">Chargement…</div></div>
     <button class="ib" id="b-inst" style="display:none" title="Installer sur ce téléphone">📲 <span class="tx">Installer</span></button>
+    <button class="ib" id="ghb" style="display:none" title="Sauvegarde GitHub">🐙 <span class="tx" id="gh-tx">GitHub</span></button>
     <button class="ib" id="drive" title="Sauvegarde Google Drive">☁️ <span class="tx" id="drive-tx">Drive</span></button>
     <button class="ib pri" id="b-new">➕ <span class="tx">Nouveau projet</span></button>
     <button class="ib" id="b-menu" aria-label="Menu">☰</button>
@@ -341,6 +358,7 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
 <div id="ibar"><span class="ic">📲</span><span class="tx"><b>Installez Projets Pro</b>Une icône sur votre téléphone ou votre ordinateur : l’application s’ouvre en plein écran et COVO Pro la lance directement.</span><button class="btn pri" id="i-go">Installer</button><button class="x2" id="i-x" aria-label="Ne plus proposer">✕</button></div>
 <main id="main"></main>
 <div id="zoom" aria-label="Image du projet"></div>
+<div id="boot"><div class="bx"><div class="sp"></div><b>Restauration des dernières sauvegardes…</b><small id="boot-tx">GitHub</small><button class="btn sec" id="boot-skip">Continuer sans attendre</button></div></div>
 <button class="fab" id="fab" style="display:none">➕ Projet</button>
 
 <div class="menu" id="menu">
@@ -423,7 +441,8 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
     <h2>Projets Pro</h2>
     <p>Suivi des projets · priorités · budget · votes</p>
     <div class="lic" id="g-lic"></div>
-    <div class="pw"><input id="g-code" type="password" inputmode="numeric" placeholder="Code administrateur COVO Pro" autocomplete="current-password"><button type="button" id="g-eye" aria-label="Afficher">👁</button></div>
+    <div class="pw"><input id="g-code" type="password" inputmode="text" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="64" placeholder="Identifiant" autocomplete="current-password"><button type="button" id="g-eye" aria-label="Afficher">👁</button></div>
+    <div class="g-hint">Lettres et chiffres acceptés (ex : Ali2026) — majuscules et minuscules sont différenciées.</div>
     <div id="g-err"></div>
     <label class="rem"><input type="checkbox" id="g-rem" checked> Rester connecté sur cet appareil</label>
     <button class="btn pri" type="submit">Se connecter</button>
@@ -499,7 +518,7 @@ function save(orderChanged) {
     GD.dirty = true; try { localStorage.setItem('covo_projets_pending', '1'); } catch (e) {}
     // COVO Pro : la modification est signalée à COVO Sync → COVO Pro (ou une autre app connectée) l'enregistre sur Drive
     try { var iso = new Date().toISOString(); localStorage.setItem('covo_drive_pending', iso); localStorage.setItem('covo_last_local_change', iso); } catch (e) {}
-    driveSchedule(); render();
+    driveSchedule(); ghSchedule(); render();
 }
 window.addEventListener('storage', function (e) { if (e.key === KEY) { var d = lsJson(KEY, null); if (d && Array.isArray(d.projets)) { DOC = d; if (!DOC.deleted) DOC.deleted = {}; render(); if (CUR) sheetRender(); } } });
 
@@ -630,7 +649,15 @@ function dragEnd() {
 
 /* ───────────── Fiche projet ───────────── */
 var CUR = null, TAB = 'ap';
-function openSheet(id, tab) { CUR = id; TAB = tab || 'ap'; autoPull(20000); sheetRender(); $('ov').classList.add('on'); $('sheet').classList.add('on'); }
+function openSheet(id, tab) {
+    if (ghCfg() && Date.now() - GH.pulled > 10000 && !openSheet.busy) {
+        openSheet.busy = true; toast('⤵️ Récupération de la dernière version…');
+        var go = false, fin = function () { if (go) return; go = true; openSheet.busy = false; if (byId(id)) openSheet2(id, tab); };
+        setTimeout(fin, 4000); ghPull('sheet').then(fin); return;
+    }
+    openSheet2(id, tab);
+}
+function openSheet2(id, tab) { CUR = id; TAB = tab || 'ap'; autoPull(20000); sheetRender(); $('ov').classList.add('on'); $('sheet').classList.add('on'); }
 function closeSheet() { CUR = null; $('ov').classList.remove('on'); $('sheet').classList.remove('on'); }
 function sheetRender() {
     var p = byId(CUR); if (!p) return closeSheet();
@@ -752,6 +779,8 @@ function bind() {
         var qt = t.closest('[data-qt]'); if (qt) { QRT = qt.getAttribute('data-qt'); return openSettings(); }
         var qa = t.closest('[data-qa]'); if (qa) return setAct(qa.getAttribute('data-qa'));
         if (t.id === 'qr-lic') { QRLIC = t.checked; return drawQR(); }
+        if (t.id === 'qr-gh') { QRGH = t.checked; return drawQR(); }
+        var ge = t.closest('[data-ghe]'); if (ge) { var gi = $('gh-tok'); gi.type = gi.type === 'password' ? 'text' : 'password'; return; }
         if (t.closest('[data-iclose]') || t.id === 'minst') { $('minst').classList.remove('on'); return; }
         var qc = t.closest('#q-ch [data-q]'); if (qc) { var qi = $('q-mt'); qi.value = Math.round(((+String(qi.value).replace(',', '.') || 0) + (+qc.getAttribute('data-q'))) * 100) / 100; qi.focus(); return; }
         if (t.closest('[data-qclose]') || t.id === 'mamt') { $('mamt').classList.remove('on'); return; }
@@ -815,6 +844,7 @@ function bind() {
     document.addEventListener('pointermove', dragMove);
     document.addEventListener('pointerup', dragEnd); document.addEventListener('pointercancel', dragEnd);
     $('b-inst').onclick = install;
+    $('ghb').onclick = function () { if (GH.err) { QRT = 'install'; openSettings(); } else ghPush(true); };
     $('i-go').onclick = install;
     $('i-x').onclick = function () { lsSet('covo_pwa_dismiss_' + PWA, '1'); $('ibar').classList.remove('on'); };
     $('r-go').onclick = function () { $('rbar').classList.remove('on'); driveConnect(false, true); };
@@ -856,14 +886,15 @@ function addVoters(p) {
 var APP_URL = 'https://aliand0810.github.io/Projets-Pro/';
 var QRT = 'install';
 function qrLib() { return new Promise(function (res, rej) { if (window.QRCode) return res(); var s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'; s.onload = function () { res(); }; s.onerror = function () { rej(); }; document.head.appendChild(s); }); }
-var QRLIC = true;
+var QRLIC = true, QRGH = false;
+function ghHash() { var c = ghCfg(); if (!QRGH || !c) return ''; try { return 'gh=' + btoa(unescape(encodeURIComponent(JSON.stringify(c)))).replace(/=+$/, ''); } catch (e) { return ''; } }
 /* licence jointe au lien (#lic=…, lue par licence_check.js) : le téléphone est activé automatiquement */
 function licHash() { var l = licence(); if (!QRLIC || !l) return ''; try { return '#lic=' + btoa(unescape(encodeURIComponent(l.mail + '|' + l.key))).replace(/=+$/, ''); } catch (e) { return ''; } }
-function qrTarget() { return (QRT === 'covo' ? 'https://aliand0810.github.io/Covo-pro/' : APP_URL + '?installer=1') + licHash(); }
+function qrTarget() { if (QRT === 'covo') return 'https://aliand0810.github.io/Covo-pro/' + licHash(); var h = licHash(), g = ghHash(); return APP_URL + '?installer=1' + (h || g ? '#' + [h.replace(/^#/, ''), g].filter(Boolean).join('&') : ''); }
 function drawQR() {
     var box = $('qr'), url = qrTarget(); if (!box) return;
     box.innerHTML = '<div class="ld">Génération du QR code…</div>';
-    $('qr-url').textContent = url.replace(/#lic=.*/, ' + licence');
+    $('qr-url').textContent = url.replace(/#.*/, '') + (/lic=/.test(url) ? ' + licence' : '') + (/gh=/.test(url) ? ' + GitHub' : '');
     qrLib().then(function () { box.innerHTML = ''; new QRCode(box, { text: url, width: 352, height: 352, colorDark: '#0f172a', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M }); var im = box.querySelector('img'); if (im) im.alt = 'QR code : ' + url; })
         .catch(function () { box.innerHTML = '<div class="ld">QR code indisponible hors connexion.<br>Utilisez le lien ci-contre.</div>'; });
 }
@@ -874,15 +905,42 @@ function openSettings() {
         + '<div class="qrw"><div class="qrbox" id="qr"></div><div class="qrs"><ol><li>Ouvrez l’<b>appareil photo</b> du téléphone et visez le QR code.</li><li>Touchez le lien qui s’affiche.</li><li>' + (QRT === 'covo' ? 'Connectez-vous à COVO Pro.' : 'Connectez-vous, puis touchez <b>« Installer »</b> (iPhone : Partager → Sur l’écran d’accueil).') + '</li></ol>'
         + '<div class="qrl" id="qr-url"></div><div class="qrb"><button class="btn sec" data-qa="copy">📋 Copier le lien</button>' + (navigator.share ? '<button class="btn sec" data-qa="share">📤 Partager</button>' : '') + '<button class="btn sec" data-qa="print">🖨️ Imprimer</button></div></div></div>'
         + (l ? '<label class="rem" style="margin:12px 0 0"><input type="checkbox" id="qr-lic"' + (QRLIC ? ' checked' : '') + '> Activer automatiquement ma licence COVO Pro sur le téléphone</label><div class="hint" style="margin:4px 0 0">🔒 Le QR code contient alors votre clé de licence : ne le montrez qu’à vos propres appareils (la limite d’appareils de la licence s’applique).</div>' : '')
+        + (ghCfg() && QRT === 'install' ? '<label class="rem" style="margin:8px 0 0"><input type="checkbox" id="qr-gh"' + (QRGH ? ' checked' : '') + '> Transmettre aussi la sauvegarde GitHub (token) au téléphone</label>' : '')
         + '<div class="hint" style="margin:10px 0 0">Sur le téléphone : connectez-vous avec votre code administrateur (ou le mot de passe maître si COVO Pro n’y a pas encore été ouvert), puis connectez Google Drive pour retrouver tous vos projets.</div></div>'
         + '<div class="sg"><h4>📲 Cet appareil</h4><div class="sub">' + (installed() ? '✅ Projets Pro est installé sur cet appareil' + (ls('covo_pwa_proto_' + PWA, '') === '1' ? ' · ouverture directe depuis COVO Pro active' : '') : 'Projets Pro n’est pas encore installé sur cet appareil') + '</div>' + (installed() ? '' : '<button class="btn pri" data-qa="install">📲 Installer sur cet appareil</button>') + '</div>'
+        + ghSection()
         + '<div class="sg"><h4>☁️ Google Drive</h4><div class="kv2"><span>État</span><b>' + (GD.connected ? '✅ Connecté' : 'Non connecté') + '</b><span>Dernière sauvegarde</span><b>' + (GD.last ? fmtDT(GD.last) : 'jamais') + '</b><span>Dernière restauration</span><b>' + (GD.restored || +ls('covo_projets_restored', '0') ? fmtDT(GD.restored || +ls('covo_projets_restored', '0')) : 'jamais') + '</b><span>Client ID</span><b>' + (cid ? esc(cid.slice(0, 18)) + '…' : 'non configuré (réglé dans COVO Pro)') + '</b></div>'
         + '<div class="qrb" style="margin-top:10px">' + (GD.connected ? '<button class="btn sec" data-qa="save">☁️ Sauvegarder maintenant</button><button class="btn sec" data-qa="restore">⤵️ Récupérer</button>' : '<button class="btn pri" data-qa="connect">☁️ Connecter Google Drive</button>') + '</div></div>'
         + '<div class="sg"><h4>🔑 Compte</h4><div class="kv2"><span>Connecté</span><b>' + esc(sx ? sx.name : '—') + '</b><span>Licence</span><b>' + (l ? 'COVO Pro · ' + esc(l.mail) : '—') + '</b><span>Projets</span><b>' + DOC.projets.length + '</b></div>'
         + '<div class="qrb" style="margin-top:10px"><button class="btn sec" data-qa="theme">🌓 Thème clair / sombre</button><button class="btn sec" data-qa="export">💾 Exporter</button><button class="btn dan" data-qa="logout">🚪 Se déconnecter</button></div></div>';
     $('mset').classList.add('on'); drawQR();
 }
+function ghSection() {
+    var c = lsJson(GHK, null) || {}, ok = !!ghCfg();
+    return '<div class="sg"><h4>🐙 Sauvegarde GitHub (token)</h4><div class="sub">Les projets sont enregistrés à chaque modification dans un fichier de votre dépôt GitHub, et restaurés automatiquement avant chaque ouverture. Utilisez de préférence un dépôt <b>privé</b>.</div>'
+        + '<div class="ghf"><div class="full"><label>Token GitHub (Contents : Read and write)</label><div class="pw"><input id="gh-tok" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_… ou ghp_…" value="' + esc(c.tok || '') + '"><button type="button" data-ghe="1" aria-label="Afficher">👁</button></div></div>'
+        + '<div><label>Propriétaire</label><input id="gh-own" autocomplete="off" spellcheck="false" value="' + esc(c.own || 'aliand0810') + '"></div>'
+        + '<div><label>Dépôt</label><input id="gh-rep" autocomplete="off" spellcheck="false" placeholder="ex : covo-donnees" value="' + esc(c.rep || '') + '"></div>'
+        + '<div><label>Branche</label><input id="gh-br" autocomplete="off" spellcheck="false" value="' + esc(c.br || 'main') + '"></div>'
+        + '<div><label>Fichier</label><input id="gh-path" autocomplete="off" spellcheck="false" value="' + esc(c.path || 'projets/covo_projets.json') + '"></div></div>'
+        + '<div class="qrb" style="margin-top:10px"><button class="btn pri" data-qa="ghsave">💾 Enregistrer et tester</button>' + (ok ? '<button class="btn sec" data-qa="ghpush">🐙 Sauvegarder maintenant</button><button class="btn sec" data-qa="ghpull">⤵️ Restaurer</button><button class="btn dan" data-qa="ghdel">Retirer</button>' : '') + '</div>'
+        + '<div class="ghst ' + (GH.err ? 'ko' : ok ? 'ok' : '') + '" id="gh-st">' + (GH.err ? '❌ ' + esc(GH.err) : ok ? '✅ Actif · dernière sauvegarde : ' + (GH.last ? fmtDT(GH.last) : 'jamais') + ' · dernière restauration : ' + (GH.restored ? fmtDT(GH.restored) : 'jamais') : 'Non configuré') + '</div>'
+        + '<details style="margin-top:8px"><summary class="hint" style="cursor:pointer;margin:0">Comment créer le token ?</summary><ol style="font-size:.78rem;color:var(--ink2);font-weight:600;line-height:1.5;padding-left:18px;margin:6px 0 0">'
+        + '<li>Sur GitHub, créez un dépôt <b>privé</b> (ex : covo-donnees).</li><li>Profil → Settings → Developer settings → Personal access tokens → <b>Fine-grained tokens</b> → Generate new token.</li><li>Repository access : <b>Only select repositories</b> → ce dépôt. Permissions → <b>Contents : Read and write</b>.</li><li>Copiez le token ici, puis « Enregistrer et tester ».</li></ol></details></div>';
+}
 function setAct(a) {
+    if (a === 'ghsave') {
+        var c = { tok: $('gh-tok').value.trim(), own: $('gh-own').value.trim(), rep: $('gh-rep').value.trim(), br: $('gh-br').value.trim() || 'main', path: ($('gh-path').value.trim() || 'projets/covo_projets.json').replace(/^\/+/, '') };
+        if (!c.tok || !c.own || !c.rep) { $('gh-st').className = 'ghst ko'; $('gh-st').textContent = '⚠️ Token, propriétaire et dépôt sont obligatoires'; return; }
+        if (!/\.json$/i.test(c.path)) c.path += '.json';
+        try { localStorage.setItem(GHK, JSON.stringify(c)); } catch (e) {}
+        GH.sha = null; GH.err = ''; $('gh-st').className = 'ghst'; $('gh-st').textContent = '⏳ Test de la connexion…';
+        ghPull('test').then(function () { if (GH.err) { openSettings(); return; } return ghPush(false).then(function (okp) { toast(okp ? '🐙 GitHub connecté : projets enregistrés et restaurés automatiquement' : '❌ ' + GH.err); openSettings(); }); });
+        return;
+    }
+    if (a === 'ghpush') { ghPush(true).then(openSettings); return; }
+    if (a === 'ghpull') { ghPull('manual').then(openSettings); return; }
+    if (a === 'ghdel') { if (!confirm('Ne plus sauvegarder les projets sur GitHub sur cet appareil ?\n\nLe fichier déjà enregistré sur GitHub n’est pas supprimé.')) return; try { localStorage.removeItem(GHK); localStorage.removeItem('covo_pp_gh_pending'); } catch (e) {} GH.err = ''; GH.dirty = false; ghUi(); return openSettings(); }
     var url = qrTarget();
     if (a === 'copy') { (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () { toast('📋 Lien copié'); }, function () { prompt('Copiez le lien :', url); }); return; }
     if (a === 'share') { navigator.share({ title: QRT === 'covo' ? 'COVO Pro' : 'Projets Pro', text: QRT === 'covo' ? 'Ouvrir COVO Pro' : 'Installer Projets Pro sur ce téléphone', url: url }).catch(function () {}); return; }
@@ -925,6 +983,93 @@ function merge(a, b) {
     var act = out.filter(isActive), ina = out.filter(function (p) { return !isActive(p); });
     return { v: 1, projets: act.concat(ina), deleted: del, updatedAt: Math.max(+a.updatedAt || 0, +b.updatedAt || 0), orderAt: Math.max(+a.orderAt || 0, +b.orderAt || 0) };
 }
+
+/* ───────────── GitHub (sauvegarde par token) ─────────────
+   Les projets sont enregistrés dans un fichier JSON d'un dépôt GitHub (de préférence PRIVÉ),
+   à chaque modification, et récupérés automatiquement avant toute ouverture. */
+var GHK = 'covo_pp_gh';
+var GH = { sha: null, dirty: ls('covo_pp_gh_pending', '') === '1', saving: false, timer: 0, last: +ls('covo_pp_gh_last', '0') || 0, pulled: 0, restored: +ls('covo_pp_gh_restored', '0') || 0, err: '' };
+function ghCfg() { var c = lsJson(GHK, null); return c && c.tok && c.own && c.rep ? { tok: c.tok, own: c.own, rep: c.rep, br: c.br || 'main', path: c.path || 'projets/covo_projets.json' } : null; }
+function ghApi(c) { return 'https://api.github.com/repos/' + encodeURIComponent(c.own) + '/' + encodeURIComponent(c.rep) + '/contents/' + c.path.split('/').map(encodeURIComponent).join('/'); }
+function ghHdr(c, raw) { return { Authorization: 'Bearer ' + c.tok, Accept: raw ? 'application/vnd.github.raw+json' : 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }; }
+function b64e(t) { return btoa(unescape(encodeURIComponent(t))); }
+function b64d(t) { return decodeURIComponent(escape(atob(String(t).replace(/\s/g, '')))); }
+function ghErr(r) { return r.status === 401 ? 'Token GitHub refusé (invalide ou expiré)' : r.status === 403 ? 'Le token n’a pas le droit d’écrire (Contents : Read and write)' : r.status === 404 ? 'Dépôt introuvable ou inaccessible avec ce token' : r.status === 409 || r.status === 422 ? 'Conflit de version' : 'GitHub ' + r.status; }
+function ghUi() {
+    var b = $('ghb'), c = ghCfg(); if (!b) return;
+    b.style.display = c ? '' : 'none'; if (!c) return;
+    b.classList.toggle('on', !GH.err && !GH.dirty && !GH.saving); b.classList.toggle('wait', !GH.err && (GH.dirty || GH.saving)); b.classList.toggle('ko', !!GH.err);
+    $('gh-tx').textContent = GH.err ? 'GitHub : erreur' : GH.saving ? 'Envoi…' : GH.dirty ? 'À envoyer' : 'GitHub à jour';
+    b.title = GH.err || ('Sauvegarde GitHub · ' + c.own + '/' + c.rep + ' · ' + (GH.last ? 'envoyée le ' + fmtDT(GH.last) : 'jamais envoyée'));
+}
+/* lecture : renvoie { doc, sha } (doc = null si le fichier n'existe pas encore) */
+function ghGet(c) {
+    return fetch(ghApi(c) + '?ref=' + encodeURIComponent(c.br) + '&t=' + Date.now(), { headers: ghHdr(c), cache: 'no-store' }).then(function (r) {
+        if (r.status === 404) return fetch('https://api.github.com/repos/' + encodeURIComponent(c.own) + '/' + encodeURIComponent(c.rep), { headers: ghHdr(c) }).then(function (r2) { if (!r2.ok) throw new Error(ghErr(r2)); return { doc: null, sha: null }; });
+        if (!r.ok) throw new Error(ghErr(r));
+        return r.json().then(function (j) {
+            if (j.content && j.encoding === 'base64') return { doc: JSON.parse(b64d(j.content)), sha: j.sha };
+            return fetch(ghApi(c) + '?ref=' + encodeURIComponent(c.br), { headers: ghHdr(c, true), cache: 'no-store' }).then(function (r3) { if (!r3.ok) throw new Error(ghErr(r3)); return r3.json(); }).then(function (d) { return { doc: d, sha: j.sha }; });
+        });
+    });
+}
+function ghApply(remote) {
+    if (!remote || !Array.isArray(remote.projets)) return { changed: false, needs: true };
+    var before = JSON.stringify(DOC.projets), m = merge(DOC, remote), changed = JSON.stringify(m.projets) !== before, needs = JSON.stringify(m.projets) !== JSON.stringify(remote.projets);
+    DOC = m; try { localStorage.setItem(KEY, JSON.stringify(DOC)); } catch (e) {}
+    return { changed: changed, needs: needs };
+}
+function ghPull(mode) {
+    var c = ghCfg(); if (!c) return Promise.resolve(false);
+    GH.saving = GH.saving; ghUi();
+    return ghGet(c).then(function (g) {
+        GH.sha = g.sha; GH.pulled = Date.now(); GH.err = '';
+        var res = g.doc ? ghApply(g.doc) : { changed: false, needs: DOC.projets.length > 0 };
+        GH.restored = Date.now(); try { localStorage.setItem('covo_pp_gh_restored', String(GH.restored)); } catch (e) {}
+        if (res.needs && DOC.projets.length) { GH.dirty = true; try { localStorage.setItem('covo_pp_gh_pending', '1'); } catch (e) {} }
+        if (res.changed) { render(); if (CUR && !editing()) sheetRender(); }
+        if (mode === 'manual') toast(res.changed ? '⤵️ Projets récupérés depuis GitHub' : '✅ Les projets sont déjà à jour (GitHub)');
+        else if (mode === 'auto' && res.changed) toast('⤵️ Dernières sauvegardes GitHub restaurées');
+        ghUi(); if (GH.dirty) ghSchedule(1500);
+        return res.changed;
+    }).catch(function (e) { GH.err = e.message; ghUi(); if (mode === 'manual' || mode === 'test') toast('❌ ' + e.message); return false; });
+}
+function ghSchedule(ms) { var c = ghCfg(); if (!c) return; GH.dirty = true; try { localStorage.setItem('covo_pp_gh_pending', '1'); } catch (e) {} ghUi(); clearTimeout(GH.timer); GH.timer = setTimeout(function () { ghPush(false); }, ms || 3000); }
+function ghPush(manual, retry) {
+    var c = ghCfg(); if (!c) return Promise.resolve(false);
+    if (GH.saving) { GH.again = true; return Promise.resolve(false); }
+    GH.saving = true; ghUi();
+    var d = new Date(), msg = 'Projets Pro — sauvegarde du ' + d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + ' (' + who() + ')';
+    var go = function () {
+        var body = { message: msg, content: b64e(JSON.stringify(DOC, null, 1)), branch: c.br }; if (GH.sha) body.sha = GH.sha;
+        return fetch(ghApi(c), { method: 'PUT', headers: Object.assign({ 'Content-Type': 'application/json' }, ghHdr(c)), body: JSON.stringify(body) });
+    };
+    var first = GH.sha || retry ? Promise.resolve() : ghGet(c).then(function (g) { GH.sha = g.sha; if (g.doc) ghApply(g.doc); });
+    return first.then(go).then(function (r) {
+        if ((r.status === 409 || r.status === 422) && !retry) {           // fichier modifié ailleurs : on fusionne puis on renvoie
+            return ghGet(c).then(function (g) { GH.sha = g.sha; if (g.doc) { ghApply(g.doc); render(); } GH.saving = false; return ghPush(manual, true); });
+        }
+        if (!r.ok) throw new Error(ghErr(r));
+        return r.json().then(function (j) {
+            GH.sha = j.content && j.content.sha; GH.dirty = false; GH.err = ''; GH.last = Date.now();
+            try { localStorage.removeItem('covo_pp_gh_pending'); localStorage.setItem('covo_pp_gh_last', String(GH.last)); } catch (e) {}
+            if (manual) toast('🐙 Projets enregistrés sur GitHub');
+            return true;
+        });
+    }).catch(function (e) { GH.err = e.message; if (manual) toast('❌ GitHub : ' + e.message); return false; })
+      .then(function (ok) { GH.saving = false; ghUi(); if (GH.again) { GH.again = false; ghSchedule(1000); } return ok; });
+}
+/* avant toute ouverture : écran de restauration (8 s maximum, puis on continue avec les données de l'appareil) */
+function bootRestore() {
+    if (!ghCfg()) return Promise.resolve();
+    var ov = $('boot'), done = false; ov.classList.add('on'); $('boot-tx').textContent = 'GitHub · ' + ghCfg().own + '/' + ghCfg().rep;
+    return new Promise(function (res) {
+        var end = function () { if (done) return; done = true; ov.classList.remove('on'); res(); };
+        $('boot-skip').onclick = end; setTimeout(end, 8000);
+        ghPull('auto').then(end);
+    });
+}
+window.addEventListener('online', function () { if (GH.dirty) ghSchedule(500); });
 
 /* ───────────── Google Drive (même compte et même dossier que COVO Pro) ───────────── */
 var GD = { client: null, token: null, connected: false, folder: null, file: ls('covo_projets_fileid', '') || null, dirty: ls('covo_projets_pending', '') === '1', saving: false, timer: 0, last: +ls('covo_projets_lastsave', '0') || 0, pulled: 0, wait: null };
@@ -1028,7 +1173,8 @@ function driveSaveNow(manual) {
 function editing() { var a = document.activeElement; return !!(a && a.closest && a.closest('#sheet') && /INPUT|TEXTAREA|SELECT/.test(a.tagName)); }
 function autoPull(minGap) { if (GD.connected && !GD.saving && Date.now() - GD.pulled > (minGap || 20000)) return drivePull('auto'); return Promise.resolve(); }
 document.addEventListener('visibilitychange', function () { if (!document.hidden) { if (GD.connected) autoPull(15000); else if (session() && ls('gdrive_client_id', '')) restoreBanner(true); } });
-window.addEventListener('focus', function () { autoPull(30000); });
+window.addEventListener('focus', function () { autoPull(30000); if (ghCfg() && Date.now() - GH.pulled > 30000) ghPull('auto'); });
+document.addEventListener('visibilitychange', function () { if (!document.hidden && ghCfg() && Date.now() - GH.pulled > 15000) ghPull('auto'); });
 function restoreBanner(show) {
     var b = $('rbar'); if (!b) return;
     if (!show || GD.connected || !session()) { b.classList.remove('on'); return; }
@@ -1072,7 +1218,7 @@ function gate() {
     if (isAdm(cu) && licence()) { alt.style.display = ''; alt.textContent = '⚡ Continuer avec ma session COVO Pro (' + (cu.username || cu.name || 'admin') + ')'; } else alt.style.display = 'none';
     $('gate').classList.add('on'); return false;
 }
-function onLogged() { $('gate').classList.remove('on'); render(); driveBoot(); instBtn(); if (window._ppFromQR && !installed()) { window._ppFromQR = false; setTimeout(install, 900); } }
+function onLogged() { $('gate').classList.remove('on'); ghUi(); bootRestore().then(function () { render(); }); render(); driveBoot(); instBtn(); if (window._ppFromQR && !installed()) { window._ppFromQR = false; setTimeout(install, 900); } }
 function loginUi() {
     $('g-eye').onclick = function () { var i = $('g-code'); i.type = i.type === 'password' ? 'text' : 'password'; i.focus(); };
     $('g-form').addEventListener('submit', function (e) {
@@ -1135,6 +1281,7 @@ function install() {
     try { var th = localStorage.getItem('covo_pp_theme'); if (th) document.documentElement.setAttribute('data-theme', th); } catch (e) {}
     if (standalone()) lsSet('covo_pwa_installed_' + PWA, '1');
     // lancée depuis COVO Pro par le lien web+covoprojets: → l'ouverture directe fonctionne
+    try { var gm = location.hash.match(/[#&]gh=([A-Za-z0-9+/_-]+)/); if (gm) { var gc = JSON.parse(decodeURIComponent(escape(atob(gm[1])))); if (gc && gc.tok && gc.own && gc.rep) localStorage.setItem(GHK, JSON.stringify(gc)); history.replaceState(null, '', location.pathname + location.search); } } catch (e) {}
     try { if (/[?&]installer=1/.test(location.search)) { window._ppFromQR = true; history.replaceState(null, '', location.pathname); } } catch (e) {}
     try { if (/[?&]ouvrir=/.test(location.search)) { lsSet('covo_pwa_proto_' + PWA, '1'); lsSet('covo_pwa_installed_' + PWA, '1'); history.replaceState(null, '', location.pathname); } } catch (e) {}
     try { if ('launchQueue' in window) window.launchQueue.setConsumer(function (p) { if (p && p.targetURL && /[?&]ouvrir=/.test(p.targetURL)) { lsSet('covo_pwa_proto_' + PWA, '1'); lsSet('covo_pwa_installed_' + PWA, '1'); } }); } catch (e) {}
