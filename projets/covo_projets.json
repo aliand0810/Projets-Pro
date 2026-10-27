@@ -91,9 +91,17 @@
     "mt": 690,
     "lib": "Apport au capital",
     "by": "Admin-Développeur"
+   },
+   {
+    "id": "C-MVQS8ZO4BRH",
+    "t": 1793111431828,
+    "date": "2026-10-27",
+    "mt": -500,
+    "lib": "payer les boissons",
+    "by": "Admin-Développeur"
    }
   ]
  },
- "updatedAt": 1792964895676,
+ "updatedAt": 1793111431828,
  "orderAt": 1792933555356
 }
